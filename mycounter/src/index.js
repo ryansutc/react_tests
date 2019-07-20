@@ -1,37 +1,31 @@
+import React from 'react'
+import ReactDOM from 'react-dom'
+
 import { createStore } from 'redux'
+import Counter from './components/Counter'
+import counter from './reducers'
 
 // 1 create a REDUCER:
-function counter(state = 0, action) {
-    switch (action.type) {
-        case 'INCREMENT':
-            return state + 1 
-        case 'DECREMENT':
-            return state - 1 
-        default:
-            return state
-    }
-}
+// moved to seperate file...
 
 // 2 create a Redux STORE (subscribe, dispatch, getState):
-let store = createStore(counter)
+const store = createStore(counter)
+const rootEl = document.getElementById('root')
+
+const render = () => ReactDOM.render(
+    <Counter
+        value={store.getState()}
+        onIncrement={() => store.dispatch({ type: 'INCREMENT' })}
+        onDecrement={() => store.dispatch({ type: 'DECREMENT' })}
+    />,
+    rootEl
+)
+
+render()
 
 // subscribe(): update UI in response to state changes (or view binding library like React-Redux)
-store.subscribe(() => console.log(store.getState()))
+store.subscribe(render)
 
 // to change/mutate state we need to 'dispatch an action':
 store.dispatch({ type: 'INCREMENT' });
 
-// console.log(store.getState())
-
-
-//---------------
-
-document.getElementById('increment')
-    .addEventListener('click', function() {
-        store.dispatch({ type: 'INCREMENT' })
-    });
-
-document.getElementById('decrement')
-    .addEventListener('click', function() {
-        store.dispatch({ type: 'DECREMENT' })
-    })
