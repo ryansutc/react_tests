@@ -3,22 +3,23 @@ import ReactDOM from 'react-dom'
 
 import { createStore } from 'redux'
 import Counter from './components/Counter'
-import counter from './reducers'
+import reducer from './reducers'
 
 // 1 create a REDUCER:
 // moved to seperate file...
 
 // 2 create a Redux STORE (subscribe, dispatch, getState):
-const store = createStore(counter)
+const store = createStore(reducer)
 const rootEl = document.getElementById('root')
 
 const render = () => ReactDOM.render(
-    <Counter
-        value={store.getState()}
-        onIncrement={() => store.dispatch({ type: 'INCREMENT' })}
-        onDecrement={() => store.dispatch({ type: 'DECREMENT' })}
-    />,
-    rootEl
+  <Counter
+    value={store.getState().value}
+    count={store.getState().count}
+    onIncrement={() => store.dispatch({ type: 'INCREMENT' })}
+    onDecrement={() => store.dispatch({ type: 'DECREMENT' })}
+  />,
+  rootEl
 )
 
 render()

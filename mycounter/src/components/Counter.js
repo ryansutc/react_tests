@@ -6,54 +6,54 @@ import CounterDisplay from './CounterDisplay';
 import PropTypes from 'prop-types';
 
 class Counter extends Component {
-    constructor(props) {
-        super(props);
-        debugger
-        this.incrementIfOdd = this.incrementIfOdd.bind(this);
-    }
+  constructor(props) {
+    super(props);
 
-    incrementIfOdd() {
-        if (this.props.value % 2 !== 0) {
-          this.props.onIncrement()
-        }
-    }
+    this.incrementIfOdd = this.incrementIfOdd.bind(this);
+  }
 
-    render() {
-        console.log("click count: " + this.props.value)
-        return (
-            <div>
-            <p>
-                Clicked: {this.props.value} times
-                {' '}
-                <button onClick={this.props.onIncrement}>
-                +
-                </button>
-                {' '}
-                <button onClick={this.props.onDecrement}>
-                -
-                </button>
-                {' '}
-                <button onClick={this.incrementIfOdd}>
-                Increment if odd
-                </button>
-                {' '}
-                
-            </p>
-            <CounterDisplay
-                count={this.props.count}
-            />
-            </div>
-        )
+  incrementIfOdd() {
+    if (this.props.value % 2 !== 0) {
+      this.props.onIncrement()
     }
+  }
+
+  render() {
+    console.log("click count: " + this.props.count)
+    return (
+      <div>
+        <p>
+          Counter: {this.props.value}
+          {' '}
+          <button onClick={this.props.onIncrement}>
+            +
+                </button>
+          {' '}
+          <button onClick={this.props.onDecrement}>
+            -
+                </button>
+          {' '}
+          <button onClick={this.incrementIfOdd}>
+            Increment if odd
+                </button>
+          {' '}
+
+        </p>
+        <CounterDisplay
+          count={this.props.count}
+        />
+      </div>
+    )
+  }
 }
 
 
 // type control of params passed:
 
 Counter.propTypes = {
-    value: PropTypes.number.isRequired,
-    onIncrement: PropTypes.func.isRequired,
-    onDecrement: PropTypes.func.isRequired
+  value: PropTypes.number.isRequired,
+  onIncrement: PropTypes.func.isRequired,
+  onDecrement: PropTypes.func.isRequired
 }
 
 export default Counter
