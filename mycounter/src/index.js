@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom'
 import { createStore } from 'redux'
 import Counter from './components/Counter'
 import reducer from './reducers'
+import { Provider } from 'react-redux'
 
 // 1 create a REDUCER:
 // moved to seperate file...
