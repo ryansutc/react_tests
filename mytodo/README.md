@@ -1,68 +1,49 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+### Todo List Exercise: React-Redux Training
 
-## Available Scripts
+This is a modification of the [Intro to Redux: Basic Tutorial](https://redux.js.org/basics/example) that I followed on the [Redux.js](https://redux.js.org) website.
 
-In the project directory, you can run:
+### Notes on the sample:
 
-### `npm start`
+I struggled with this. Okay, I get complex and dynamic Single Page Apps (SPAs) need to manage state in one central location. Even powerful Web Component Frameworks like React get complex when you are passing state up and down the Component tree. 
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Redux provides some conventions on how to manage state, state containers, etc. This makes sense.
 
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
+But I really struggled to follow how this example was changing state. Especially the magic looking bits where Components are hooked into. Even after I went back and brushed up on ES6, still was hard for me to wrap my head around.
 
-### `npm test`
+Also the seperation of containers (functionality) and components (visual layout).
 
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+I added a SummaryCount component to the example.
+1) created new Component's HTML layout in ["SummaryCount"](./src/components/SummaryCount.js).
+2) Established new Component's functionality in ["GetSummaryCount"](./src/containers/GetSummaryCount.js). Here the new Component is given Redux superpowers with:
+		```
+		export default connect(
+		  mapStateToProps,
+		  null // switched to null
+		)(SummaryCount)
+		```
+Which wraps it. The mapStateToProps is a function to control how it gets Redux's state container info. This is an event listener? When the Redux state changes this gets called. This handles checking the new state and passing relevent info along to the container as properties. It will also cause the component to re-render if there's any changes to properties?
 
-### `npm run build`
+There is usually(?) a second argument to connect() called by convention, ["mapDispatchToProps"](https://react-redux.js.org/api/connect#mapdispatchtoprops-object-dispatch-ownprops-object). I think this would be better called "DispatchFromProps" because, from what I understand, it is a way to have your component say, "hey Redux state container, I changed in some way. Go update yourself so other web components know, and can respond accordingly." Basically you map out what Action you want associated with each property change. Or something. I didn't use this. [todo: research more]
 
-Builds the app for production to the `build` folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.
+There's also the funky way it is written:
+connect(mapStateToProps, mapDispatchToProps)(YourComponent)
 
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
+Huh? I think this is the ES6 callback equivelent of:
+```
+	function(mapStateToProps, mapDispatchToProps) {
+		return function(YourComponent)
+	}
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+But again need to re-research. 
 
-### `npm run eject`
+3) Updated Reducer action's, ['ADD_TODO' and 'TOGGLE_TODO'](https://github.com/ryansutc/react_tests/blob/5f8062c5669071ff34a5b5e463b0e12c71945f96/mytodo/src/reducers/todos.js#L6-L35) to handle updating the new store object properties I created for the summary component. This part could probably be heavily refactored. I avoided mutating the existing state by using [```JSON.parse(JSON.stringify([origObject]))```](https://github.com/ryansutc/react_tests/blob/5f8062c5669071ff34a5b5e463b0e12c71945f96/mytodo/src/reducers/todos.js#L13) which is a bit of a hack to make a deep copy of an object.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
 
-## Learn More
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
-To learn React, check out the [React documentation](https://reactjs.org/).
 
-### Code Splitting
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
