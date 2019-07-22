@@ -31,3 +31,12 @@
     transform: rotate(360deg);
   }
 }
+
+.Post {
+  border-bottom: 2px solid #eee;
+  background-color: #fafafa;
+  margin: .75rem auto;
+  padding: .6rem 1rem;
+  max-width: 500px;
+  border-radius: 7px;
+}
