@@ -12,6 +12,8 @@ But I really struggled to follow how this example was changing state. Especially
 
 Also the seperation of containers (functionality) and components (visual layout).
 
+### What I did:
+
 I added a SummaryCount component to the example.
 1) created new Component's HTML layout in ["SummaryCount"](./src/components/SummaryCount.js).
 2) Established new Component's functionality in ["GetSummaryCount"](./src/containers/GetSummaryCount.js). Here the new Component is given Redux superpowers with:
