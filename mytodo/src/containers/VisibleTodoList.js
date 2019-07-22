@@ -3,26 +3,29 @@ import { toggleTodo } from '../actions'
 import TodoList from '../components/TodoList'
 import { VisibilityFilters } from '../actions'
 
-const getVisibleTodos = (todos, filter) => {
-  switch (filter) {
+const getVisibleTodos = (state, action) => {
+
+  switch (action.visibilityFilter) {
     case VisibilityFilters.SHOW_ALL:
-      return todos
+      return state.todos
     case VisibilityFilters.SHOW_COMPLETED:
-      return todos.filter(t => t.completed)
+      return state.todos.filter(t => t.completed)
     case VisibilityFilters.SHOW_ACTIVE:
-      return todos.filter(t => !t.completed)
+      return state.todos.filter(t => !t.completed)
     default:
-      throw new Error('Unknown filter: ' + filter)
+      throw new Error('Unknown filter: ' + state.filter)
   }
 }
 
 const mapStateToProps = state => ({
-  todos: getVisibleTodos(state.todos, state.visibilityFilter)
+  todos: getVisibleTodos(state.todos, state) //state.filter
 })
 
-const mapDispatchToProps = dispatch => ({
-  toggleTodo: id => dispatch(toggleTodo(id))
-})
+const mapDispatchToProps = dispatch => {
+  return ({
+    toggleTodo: id => dispatch(toggleTodo(id))
+  })
+}
 
 export default connect(
   mapStateToProps,

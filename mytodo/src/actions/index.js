@@ -8,7 +8,7 @@ export const addTodo = text => ({
 
 export const setVisibilityFilter = filter => ({
   type: 'SET_VISIBILITY_FILTER',
-  filter
+  visibilityFilter: filter
 })
 
 export const toggleTodo = id => ({
