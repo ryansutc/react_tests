@@ -13,10 +13,12 @@ export const createPost = ({title, body}) => {
     })
 };
 
-export const deletePost = id => ({
-    type: DELETE_POST,
-    payload: {
-        id
-    }
-});
+export const deletePost = id => {
+    return ({
+        type: DELETE_POST,
+        payload: {
+            id
+        }
+    });
+}
 

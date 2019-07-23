@@ -5,6 +5,7 @@ const postReducer = (state = defaultState, action) => {
     return state.concat([{ id: action.payload.id, title: action.payload.title, body: action.payload.body }]);
   }
   else if (action.type === 'DELETE_POST') {
+    
     return state.filter(post => post.id !== action.payload.id);
   }
   else {
