@@ -7,14 +7,15 @@ import NewPost from '../components/NewPost';
 
 
 const mapDispatchToProps = dispatch => {
-    return {
-        onAddPost: post => {
-            dispatch(createPost(post));
-        }
-    };
+
+  return {
+    onAddPost: post => {
+      dispatch(createPost(post));
+    }
+  };
 };
 
 export default connect(
-    null,
-    mapDispatchToProps
+  null,
+  mapDispatchToProps
 )(NewPost);
