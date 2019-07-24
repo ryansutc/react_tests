@@ -34,3 +34,20 @@ https://jestjs.io/docs/en/tutorial-react
 ### How to debug your Jest tests in VS Code
 
 https://jestjs.io/docs/en/troubleshooting
+
+
+### Snapshot testing What the what?
+
+[When to use guidance](https://benmccormick.org/2016/09/19/testing-with-jest-snapshots-first-impressions/)
+
+
+### Opinions on Testing
+
+https://itnext.io/testing-components-with-jest-and-react-testing-library-d36f5262cde2
+
+For guidance seek React Testing Library
+- more implementation tests & less unit tests
+
+React Testing Library Github has samples of testing a form, entering data and seeing if the user can log in:
+https://github.com/testing-library/react-testing-library
+

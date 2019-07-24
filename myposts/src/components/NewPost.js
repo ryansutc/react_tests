@@ -19,7 +19,6 @@ class NewPost extends React.Component {
         
         if (this.state.title.trim() && this.state.body.trim()) {
             console.log(this.state);
-            debugger
             this.props.onAddPost({title: this.state.title, body: this.state.body}); // here we call the onAddPost property (a function) which will send the new state info to Redux state container via an action.
             this.handleReset();
         }
@@ -48,7 +47,8 @@ class NewPost extends React.Component {
                     </div>
                     <div className="form-group">
                         <textarea
-                            cols="15" rows="8" placeholder="Body" className="form-control" name="body"
+                            cols="15" rows="8" placeholder="Body" className="form-control" 
+                            name="body"
                             onChange={ this.handleInputChange }
                             value={ this.state.body} >
                         </textarea>

@@ -28,7 +28,6 @@ describe('post reducer', () => {
     let result = postReducer(initialState, { type: DELETE_POST, payload: {id: 1} });
       //result.toEqual([])
       expect(result).toEqual([])
-    
   })
 
 })
