@@ -1,0 +1,20 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders correctly. Snapshot test 1`] = `
+<div
+  className="Post"
+  id="post5"
+>
+  <h2>
+    hey you
+  </h2>
+  <div />
+  <button
+    className="btn btn-danger"
+    onClick={[Function]}
+    type="button"
+  >
+    Remove
+  </button>
+</div>
+`;
