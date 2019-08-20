@@ -1,26 +1,31 @@
-import { useState, useEffect } from 'react';
-import { loadModules } from '@esri/react-arcgis';
+import * as React from 'react';
+import { loadModules } from 'esri-loader';
 
-
-const FeatureLayer = (props) => {
-  const [layers, setLayer] = useState([]);
-  useEffect(() => {
-    loadModules(['esri/layers/FeatureLayer']).then(([FeatureLayer]) => {
-      const mylayer = new FeatureLayer({
-        url: "https://services8.arcgis.com/vVBb77z9fDbXITgG/ArcGIS/rest/services/SamplePoints/FeatureServer/0",
-        outFields: ["value"]
-      })
-
-      setLayer([mylayer]);
-      props.map.layers = [mylayer];
-      props.view.map = props.map;
-    })
-
-
-    return () => props.view = null;
-  }) // end useEffect
-
-  return null;
-}
-
-export default FeatureLayer;
+class FeatureLayer extends React.Component {
+    constructor(props) {
+      super(props);
+      this.state = {
+        layer: null
+      };
+    } 
+    render() {
+      return null;
+    }
+  
+    componentWillMount() {
+      loadModules(['esri/layers/FeatureLayer']).then(([ FeatureLayer ]) => {
+          const featureLayer = FeatureLayer({
+            url: this.props.layerID
+          });
+          this.setState({layer: featureLayer});
+          this.props.map.add(this.state.layer); 
+        } 
+      ).catch((err) => console.error(err));
+    }
+  
+    componentWillUnmount() {
+      this.props.map.remove(this.state.featureLayer);
+    }
+  }
+  
+  export default FeatureLayer;
