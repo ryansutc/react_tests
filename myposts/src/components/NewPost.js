@@ -33,7 +33,7 @@ class NewPost extends React.Component {
 
     render() {
         return (
-            <div>
+            <div data-testid="form1">
                 <form onSubmit={this.handleSubmit }>
                     <div className="form-group">
                         <input 

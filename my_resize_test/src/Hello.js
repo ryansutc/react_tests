@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Chart from './Chart';
 
 const styles = {
     width: '50%',
@@ -34,7 +35,6 @@ export default class Hello extends Component {
   }
 
   componentDidMount() {
-      debugger
     //console.log(this.parentElem)
     this.setState({
       dimensions: {
@@ -55,9 +55,10 @@ export default class Hello extends Component {
     console.log(`from renderContent: ${dimensions.width} x ${dimensions.height}`);
     return (
       <div>
-        width: {Math.round(dimensions.width)}
-        <br />
-        height: {Math.round(dimensions.width)}
+        <Chart 
+          width={dimensions.width}
+          height={dimensions.height}
+          />
       </div>
     );
   }
@@ -67,8 +68,6 @@ export default class Hello extends Component {
   render() {
     const { dimensions } = this.state;
     
-    
-
     return (
       <div className="Hello" style={styles} ref={ this.parentElem}>
         {dimensions && this.renderContent()}
