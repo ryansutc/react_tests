@@ -34,16 +34,16 @@ class App extends React.Component {
             center: [-123.1257, 49.249],
             zoom: 17
           }}>
-            { this.createFeatureLayers() }
+          {this.createFeatureLayers()}
         </Map>
       </div>
     );
   }
 
-  createFeatureLayers(){
+  createFeatureLayers() {
     let featureLayerComponents = []
     for (var layer in this.state.featureLayers) {
-      featureLayerComponents.push(<FeatureLayer layerID={ this.state.featureLayers[layer] }/>)
+      featureLayerComponents.push(<FeatureLayer layerID={this.state.featureLayers[layer]} />)
     }
     return featureLayerComponents
   }
@@ -52,6 +52,7 @@ class App extends React.Component {
   handleMapLoad(map, view) {
     console.log('Map Loaded.')
     this.setState({ map: map, view: view, featureLayers: this.featureLayers });
+
   }
 
   handleFail(e) {
