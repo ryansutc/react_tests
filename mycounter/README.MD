@@ -8,3 +8,6 @@ I did some "challenges" beyond the tutorial example and added a counter display 
 Seems to me like this was simular to the React example. I'm still passing down properties from parent to child (Counter to CounterDisplay) as props. Am I missing something with Redux?
 
 
+### Source
+
+https://reactgo.com/material-ui-react-tutorial/
