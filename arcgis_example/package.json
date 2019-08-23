@@ -7,6 +7,7 @@
     "esri-loader": "^2.10.0",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
+    "react-number-format": "^4.2.0",
     "react-scripts": "3.1.1"
   },
   "scripts": {
