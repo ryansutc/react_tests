@@ -4,6 +4,8 @@
   "private": true,
   "dependencies": {
     "@esri/react-arcgis": "^4.0.0",
+    "@material-ui/core": "^4.4.0",
+    "@material-ui/icons": "^4.2.1",
     "esri-loader": "^2.10.0",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",

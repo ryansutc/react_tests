@@ -11,13 +11,21 @@ const FeatureLayer = (props) => {
         const featureLayer = FeatureLayer({
           url: props.layerID,
           renderer: getRenderer(props.minVal, props.midVal, props.maxVal), // replace this with dynamic values.
-          labelingInfo: [labelClass]
+          labelingInfo: [labelClass],
+          filter: { where: "value >= " + props.minVal + " && value <= " + props.maxVal }
         });
 
         setLayer(featureLayer);
-        props.map.add(layer);
+        console.log("added feature layer");
+        props.map.add(featureLayer);
         featureLayer.when(() => {
+
           props.view.extent = featureLayer.fullExtent;
+          if (props.hide) {
+            layer.filter = {
+              where: "value >= " + props.minVal + " && value <= " + props.maxVal
+            }
+          }
         })
 
       }).catch((err) => console.error(err));
