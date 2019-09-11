@@ -1,7 +1,7 @@
 import React from 'react';
 import { loadModules } from 'esri-loader';
 
-function getSymbolForPt() {
+export function getSymbolForPt() {
   let symbol = {
     type: "simple-marker",
     style: "circle",
@@ -16,18 +16,16 @@ function getSymbolForPt() {
   return symbol;
 }
 
-export const featureSetToGraphics = (featureSet) => {
+export const featuresToGraphics = (features) => {
   return new Promise((resolve, reject) => {
     loadModules([
       'esri/Graphic',
       'esri/geometry/Point'
     ])
       .then(([Graphic, Point]) => {
-        // i assume we don't need to reload graphic from esri
-
 
         let graphics = [];
-        featureSet.features.forEach((feature) => {
+        features.forEach((feature) => {
           var graphic = new Graphic({
             geometry: feature.geometry,
             symbol: getSymbolForPt(),
@@ -42,4 +40,45 @@ export const featureSetToGraphics = (featureSet) => {
         reject(err);
       })
   })
+}
+
+export const updateSelectedPts = (_existingGraphics, newGraphics, shift = false) => {
+
+  // we should have ESRI Collection class loaded by now:
+  return new Promise(resolve => {
+    loadModules(['esri/core/Collection']).then(([Collection]) => {
+      let existingGraphics = _existingGraphics !== null ? _existingGraphics.clone() : new Collection(); // don't mutate existing prop!
+      let newGraphicsSel = new Collection();
+      newGraphicsSel.addMany(newGraphics);
+
+      if (!shift) {
+        existingGraphics.removeAll();
+      }
+
+      let newGraphicsSelClone = newGraphicsSel.clone();
+      if (existingGraphics.length) {
+        // if already selected points & shift select:
+        newGraphicsSel.forEach((graphic, index) => {
+          if (existingGraphics.some(pt => ptsAreEqual(graphic, pt))) {
+            //if our point already exists remove it:
+            let ptIndex = existingGraphics.findIndex(pt => ptsAreEqual(graphic, pt))
+            existingGraphics.removeAt(ptIndex);
+            newGraphicsSelClone.removeAt(index);
+          }
+        })
+      }
+
+      existingGraphics.addMany(newGraphicsSelClone);
+      resolve(existingGraphics);
+    })
+  });
+}
+
+function ptsAreEqual(pt1, pt2) {
+  if (JSON.stringify(pt1.attributes) === JSON.stringify(pt2.attributes)) {
+    return true;
+  }
+  else {
+    return false;
+  }
 }
