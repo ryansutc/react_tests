@@ -39,7 +39,7 @@ class CustomFlyout extends React.Component {
     const {x, y, orientation, datum, payloadItems} = this.props;
     const newY = orientation === "bottom" ? y - 35 : y + 35;
     return (
-      <Paper>
+
       <g>
         <circle cx={x} cy={newY} r="20" stroke="tomato" fill="none"/>
         <circle cx={x} cy={newY} r="25" stroke="orange" fill="none"/>
@@ -51,7 +51,6 @@ class CustomFlyout extends React.Component {
           style={{ backgroundColor: colors[0], width: "100%" }}
         />
       </g>
-      </Paper>
       /*
       <Paper>
           <Grid container>

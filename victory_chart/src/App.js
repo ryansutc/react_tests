@@ -6,6 +6,7 @@ import {LineSegment, VictoryChart, VictoryTooltip, VictoryAxis, VictoryStack, Vi
 import * as data from './MockData';
 
 import ChartToolTip from "./ChartToolTip";
+import SimpleToolTip from "./SimpleToolTip";
 import CustomFlyOut from './CustomFlyOut';
 
 function formatDateForLabel(dateString) {
@@ -22,16 +23,11 @@ function App() {
     <div style={{width: '100vw', height: '100vh'}}>
       
       <VictoryChart
+        padding={{left: 80, right: 80, bottom: 80, top: 10}}
         animate={false} //NEED to be able to set font size
         width={800} height={300}
         containerComponent={
-          <VictoryVoronoiContainer
-            labelComponent={
-              <VictoryTooltip
-                cornerRadius={0}
-                centerOffset={{x:2,y:2}}                 
-              />
-            }
+          <VictoryVoronoiContainer 
           />
         }
       >
@@ -65,37 +61,51 @@ function App() {
           domain={{x: [1209459281, 1232272484], y: [-0.8, 0.8]}} // TODO make dynamic
         >
           <VictoryGroup
-            
-            labels= {({ datum}) => datum._y}
-            labelComponent={
-              <VictoryTooltip
-                flyoutComponent={<CustomFlyOut payloadItems={data.data}/>}
-                style={{ fontSize: 10 }}
-              />
-
-              //<ChartToolTip
-              //  startDate={data.data[0].acquisition_time}
-              //  payload={[data]}
-              //  classes={{tooltip:"tooltip-456"}}
-              ///>
-            }
+            voronoiDimension="x"
+            labels={({ datum }) => `y: ${datum._y}`}
+            labelComponent={<VictoryTooltip cornerRadius={0} flyoutStyle={{fill: "white"}}/>}
+            title="Cumulative Displacement Chart"
+            desc="Chart showing relative surface displacement over time"
           >
+            {
+              // lets loop through all items in data and create a new Line and 
+              // Scatter element for each:
+              Object.keys(Object.values(data.data)[0])
+                  .filter(key => key !== "date")
+                  .map((pt_id, index, array) => {
+                    let noOfLines =
+                      Object.keys(Object.values(data.data)[0])
+                        .length - 1;
+                    let massSelection = noOfLines > 6;
+                    let strokeWidth = massSelection ? 2 : 4;
+                    return pt_id !== "average" ? (
+                      <div>
+                        <VictoryLine
+                          name={pt_id}
+                          animate={true}
+                          data={data.data}
+                          x="date"
+                          y={`"${pt_id}"`}
+                          interpolation="linear"
+                          style={{
+                            data: { stroke: "orange", strokeWidth: {strokeWidth}},
+                            labels: { fill: "blue"}
+                          }}     
+                        />
+                        <VictoryScatter
+                          name={pt_id}
+                          size={({ active }) => active ? 5 : 3}
+                          data={data.data}
+                          x="date"
+                          y={`"${pt_id}"`}
+                          style={{ data: { fill: "green"} }}
+                        />
+                      </div>
+                    ) : null
+            })
+          }
 
-            <VictoryLine
-              animate={true}
-              data={data.data}
-              x="acquisition_time"
-              y="disp_los"
-              interpolation="linear"      
-            />
-
-            <VictoryScatter
-              size={({ active }) => active ? 5 : 3}
-              data={data.data}
-              x="acquisition_time"
-              y="disp_los"
-              style={{ data: { fill: "green"} }}
-            />
+            
           </VictoryGroup>
         </VictoryStack>
       </VictoryChart>
