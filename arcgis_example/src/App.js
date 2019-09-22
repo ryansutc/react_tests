@@ -27,15 +27,14 @@ class App extends React.Component {
     this.handleMapClick = this.handleMapClick.bind(this);
     this.handleFail = this.handleFail.bind(this);
     this.createFeatureLayers = this.createFeatureLayers.bind(this);
+    this.renderViewContent = this.renderViewContent.bind(this);
     this.updateSymbol = this.updateSymbol.bind(this);
     this.featureLayers = ["https://services8.arcgis.com/vVBb77z9fDbXITgG/ArcGIS/rest/services/SamplePoints/FeatureServer/0"];
   }
 
   render() {
-
-    console.log("map is rendering: " + this.state)
     return (
-      <div style={{ width: '100vw', height: '90vh' }}>
+      <div style={{ width: '100vw', height: '100vh' }}>
         <Map
           onLoad={this.handleMapLoad}
           onFail={this.handleFail}
@@ -48,15 +47,33 @@ class App extends React.Component {
             zoom: 12
           }}>
           {this.createFeatureLayers()}
-          <Controller
-            onChange={this.updateSymbol}
-            minVal={this.state.minVal}
-            midVal={this.state.midVal}
-            maxVal={this.state.maxVal}
-          />
+
         </Map>
       </div>
     );
+  }
+
+  renderViewContent(view) {
+    const node = document.createElement("div");
+    const node2 = document.createElement("div");
+    view.ui.add(node, "bottom-right");
+
+    ReactDOM.render(
+      <SketchGraphicContainer
+        map={this.state.map}
+        view={this.state.view}
+        selectPts={this.selectPts}
+        handleSelectPts={this.handleSelectPts}
+      />, node);
+
+    view.ui.add(node2, "bottom-left");
+    ReactDOM.render(
+      <Controller
+        onChange={this.updateSymbol}
+        minVal={this.state.minVal}
+        midVal={this.state.midVal}
+        maxVal={this.state.maxVal}
+      />, node2);
   }
   handleMapClick(event) {
     this.state.view.hitTest(event).then(response => {
@@ -107,17 +124,8 @@ class App extends React.Component {
 
   handleViewLoad(view) {
     view.when(() => {
-      console.log("handleViewLoad is being run");
-      const node = document.createElement("div");
-      view.ui.add(node, "bottom-right");
       view.on("click", this.handleMapClick);
-      ReactDOM.render(
-        <SketchGraphicContainer
-          map={this.state.map}
-          view={this.state.view}
-          selectPts={this.selectPts}
-          handleSelectPts={this.handleSelectPts}
-        />, node);
+      this.renderViewContent(view);
     })
   }
 

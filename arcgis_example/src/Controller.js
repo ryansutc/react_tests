@@ -1,6 +1,7 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import NumberFormat from 'react-number-format';
+import { FormControl } from '@material-ui/core';
 
 
 export default function Controller(props) {
@@ -16,14 +17,23 @@ export default function Controller(props) {
 
   console.log(props);
   return (
-    <div style={{ width: '100vw', height: '10vh', padding: '10px' }}>
+    <div style={{ width: '300px', padding: '10px', backgroundColor: 'white' }}>
       <form>
-        <label htmlFor="minVal">Min Value</label>
-        <NumberFormat value={minVal} id="minVal" onChange={onChange} onBlur={props.onChange}></NumberFormat>
-        <label htmlFor="midVal" >Mid Value</label>
-        <NumberFormat value={midVal} id="midVal" onChange={onChange} onBlur={props.onChange}></NumberFormat>
-        <label htmlFor="maxVal">Max Value</label>
-        <NumberFormat value={maxVal} id="maxVal" onChange={onChange} onBlur={props.onChange}></NumberFormat>
+        <FormControl>
+          <label htmlFor="minVal">Min Value</label>
+          <NumberFormat value={minVal} id="minVal" onChange={onChange} onBlur={props.onChange}>
+          </NumberFormat>
+        </FormControl>
+        <FormControl>
+          <label htmlFor="midVal" >Mid Value</label>
+          <NumberFormat value={midVal} id="midVal" onChange={onChange} onBlur={props.onChange}>
+          </NumberFormat>
+        </FormControl>
+        <FormControl>
+          <label htmlFor="maxVal">Max Value</label>
+          <NumberFormat value={maxVal} id="maxVal" onChange={onChange} onBlur={props.onChange}>
+          </NumberFormat>
+        </FormControl>
       </form>
     </div >
   )
