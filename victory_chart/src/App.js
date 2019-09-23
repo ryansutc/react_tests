@@ -1,10 +1,13 @@
 import React, { PureComponent } from 'react';
 import './App.css';
 
-import {LineSegment, VictoryChart, VictoryTooltip, VictoryAxis, VictoryStack, VictoryLabel, 
-  VictoryLine, VictoryScatter, VictoryTheme, VictoryVoronoiContainer, VictoryGroup}  from 'victory';
-import * as data from './MockData';
+import {
+  LineSegment, VictoryChart, VictoryTooltip, VictoryAxis, VictoryStack, VictoryLabel,
+  VictoryLine, VictoryScatter, VictoryTheme, VictoryVoronoiContainer, VictoryGroup
+} from 'victory';
+import * as data from './MockData2';
 
+import VictoryElem from './VictoryElem';
 import ChartToolTip from "./ChartToolTip";
 import SimpleToolTip from "./SimpleToolTip";
 import CustomFlyOut from './CustomFlyOut';
@@ -19,95 +22,118 @@ function formatDateForLabel(dateString) {
 // https://stackblitz.com/edit/victory-chart-demo
 
 function App() {
+  var chartData = Object.values(data.data);
+  var pt_ids = Object.keys(chartData[0]).filter(key => key !== "date");
+  const colors = [
+    "#2464a8",
+    "#ffba44",
+    "#a82445",
+    "#00c7f9",
+    "#9500f9",
+    "#00f932"
+  ];
   return (
-    <div style={{width: '100vw', height: '100vh'}}>
-      
+    <div style={{ width: '100vw', height: '100vh', backgroundColor: "darkgrey" }}>
+
       <VictoryChart
-        padding={{left: 80, right: 80, bottom: 80, top: 10}}
+        padding={{ left: 80, right: 80, bottom: 80, top: 10 }}
         animate={false} //NEED to be able to set font size
         width={800} height={300}
+        theme={VictoryTheme.material}
         containerComponent={
-          <VictoryVoronoiContainer 
+          <VictoryVoronoiContainer
+            theme="material"
+            voronoiDimension="x"
+            title="Cumulative Displacement Chart"
+            desc="Chart showing relative surface displacement over time"
           />
         }
       >
+
         <VictoryAxis name="Y access"
-          axisComponent={<LineSegment type={"axis"}/>}
+          axisComponent={<LineSegment type={"axis"} />}
           dependentAxis={true} //this means it is y axis?
-          label="Displacement"
+          label="cm"
           standalone={false}
-          // TODO need to add ticks for axis
-          // TODO need to add properties to force labelling of min/max domain vals
+          key="Y access"
+          style={{
+            tickLabels: { fontSize: 10, padding: 5 }
+          }}
+        // TODO need to add ticks for axis
+        // TODO need to add properties to force labelling of min/max domain vals
         />
         <VictoryAxis name="X access"
           label="X Axis"
+          key="X access"
           //tickFormat={(x) => formatDateForLabel(x)}
           tickLabelComponent={<CustomizedAxisTick />}
           standalone={false}
-          axisValue={-0.8} // TODO: make either min of data or range value variable
-          // TODO need to add ticks for axis
+          axisValue={-50} // TODO: make either min of data or range value variable
+
+          style={{
+
+            ticks: { stroke: "grey", size: 5 },
+            tickLabels: { fontSize: 10, padding: 5 }
+          }}
+        // TODO need to add ticks for axis
         />
 
-        <VictoryLine name="ZeroLine"
-          domain={{x: [1209459281, 1232272484]}} // TODO needs to dynamically be first and last value
+        <VictoryLine name="ZeroLine" key="zeroline"
+          domain={{ x: [1399874039, 1480443090] }} // TODO needs to dynamically be first and last value
           y={() => 0} // TODO make dynamic to mid val
 
           style={{
-            data: {stroke: "yellow", strokeWidth: 1.2},
+            data: { stroke: "yellow", strokeWidth: 1.2 }
           }}
-        />  
+        />
 
-        <VictoryStack
-          domain={{x: [1209459281, 1232272484], y: [-0.8, 0.8]}} // TODO make dynamic
+        <VictoryGroup
+          domain={{ x: [1399874039, 1480443090], y: [-50, 50] }} // TODO make dynamic
+          labels={({ datum }) => `y: ${datum._y}`}
+          labelComponent={<VictoryTooltip cornerRadius={0} flyoutStyle={{ fill: "white" }} />}
         >
-          <VictoryGroup
-            voronoiDimension="x"
-            labels={({ datum }) => `y: ${datum._y}`}
-            labelComponent={<VictoryTooltip cornerRadius={0} flyoutStyle={{fill: "white"}}/>}
-            title="Cumulative Displacement Chart"
-            desc="Chart showing relative surface displacement over time"
-          >
-            {
-              // lets loop through all items in data and create a new Line and 
-              // Scatter element for each:
-              Object.keys(Object.values(data.data)[0])
-                  .filter(key => key !== "date")
-                  .map((pt_id, index, array) => {
-                    let noOfLines =
-                      Object.keys(Object.values(data.data)[0])
-                        .length - 1;
-                    let massSelection = noOfLines > 6;
-                    let strokeWidth = massSelection ? 2 : 4;
-                    return pt_id !== "average" ? (
-                      <div>
-                        <VictoryLine
-                          name={pt_id}
-                          animate={true}
-                          data={data.data}
-                          x="date"
-                          y={`"${pt_id}"`}
-                          interpolation="linear"
-                          style={{
-                            data: { stroke: "orange", strokeWidth: {strokeWidth}},
-                            labels: { fill: "blue"}
-                          }}     
-                        />
-                        <VictoryScatter
-                          name={pt_id}
-                          size={({ active }) => active ? 5 : 3}
-                          data={data.data}
-                          x="date"
-                          y={`"${pt_id}"`}
-                          style={{ data: { fill: "green"} }}
-                        />
-                      </div>
-                    ) : null
+          {
+
+            // lets loop through all items in data and create a new Line and 
+            pt_ids.map((pt_id, index, array) => {
+
+              return (<VictoryLine
+                key={pt_id + " line"}
+                name={pt_id + " line"}
+                animate={true}
+                data={chartData}
+                x="date"
+                y={pt_id}
+                interpolation="linear"
+                style={{
+                  data: { stroke: colors[index], strokeWidth: 2 }
+                }}
+              />)
+            })
+
+          }
+
+          {
+            pt_ids.map((pt_id, index, array) => {
+
+              return (<VictoryScatter
+                key={pt_id + "scatter"}
+                name={pt_id + "scatter"}
+                size={({ active }) => active ? 5 : 3}
+                data={chartData}
+                x="date"
+                y={pt_id}
+                style={{
+                  data: { fill: colors[index] },
+                  labels: { fill: colors[index] }
+                }}
+              />)
             })
           }
 
-            
-          </VictoryGroup>
-        </VictoryStack>
+
+
+        </VictoryGroup>
       </VictoryChart>
 
     </div>
@@ -128,10 +154,11 @@ class CustomizedAxisTick extends PureComponent {
           textAnchor="end"
           //fill={axisTickColor}
           transform="rotate(-35)"
+          style={this.props.style}
         >
           {formatDateForLabel(datum)}
         </text>
-      </g>
+      </g >
     );
   }
 }
