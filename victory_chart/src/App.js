@@ -3,14 +3,10 @@ import './App.css';
 
 import {
   LineSegment, VictoryChart, VictoryTooltip, VictoryAxis, VictoryStack, VictoryLabel,
-  VictoryLine, VictoryScatter, VictoryTheme, VictoryVoronoiContainer, VictoryGroup
+  VictoryLine, VictoryScatter, VictoryTheme, VictoryVoronoiContainer, VictoryGroup, VictoryClipContainer, Flyout
 } from 'victory';
 import * as data from './MockData2';
-
-import VictoryElem from './VictoryElem';
-import ChartToolTip from "./ChartToolTip";
-import SimpleToolTip from "./SimpleToolTip";
-import CustomFlyOut from './CustomFlyOut';
+import moment from 'moment';
 
 function formatDateForLabel(dateString) {
   let d = new Date(0);
@@ -24,6 +20,7 @@ function formatDateForLabel(dateString) {
 function App() {
   var chartData = Object.values(data.data);
   var pt_ids = Object.keys(chartData[0]).filter(key => key !== "date");
+  var chartTitle = "Cumulative Displacement for selected points from";
   const colors = [
     "#2464a8",
     "#ffba44",
@@ -42,10 +39,10 @@ function App() {
         theme={VictoryTheme.material}
         containerComponent={
           <VictoryVoronoiContainer
-            theme="material"
             voronoiDimension="x"
             title="Cumulative Displacement Chart"
             desc="Chart showing relative surface displacement over time"
+            
           />
         }
       >
@@ -69,7 +66,8 @@ function App() {
           tickLabelComponent={<CustomizedAxisTick />}
           standalone={false}
           axisValue={-50} // TODO: make either min of data or range value variable
-
+          minDomain={{y: -50}}
+          crossAxis={false}
           style={{
 
             ticks: { stroke: "grey", size: 5 },
@@ -89,8 +87,22 @@ function App() {
 
         <VictoryGroup
           domain={{ x: [1399874039, 1480443090], y: [-50, 50] }} // TODO make dynamic
-          labels={({ datum }) => `y: ${datum._y}`}
-          labelComponent={<VictoryTooltip cornerRadius={0} flyoutStyle={{ fill: "white" }} />}
+          voronoiDimension="x"
+          labels={CustomToolTipLabel}
+          labelComponent={
+            <VictoryTooltip 
+              cornerRadius={0} 
+              flyoutWidth={120} 
+              centerOffset={{y: (pt_ids.length * -10) + 10, x: 0}}
+              flyoutStyle={{ fill: "white" }} 
+              flyoutComponent={
+                <Flyout 
+                  pointerLength={0} 
+                  pointerWidth={0} />
+              }
+              style={[{fill: "black", fontSize: 10}, { fill: colors[0]}, {fill: colors[1]}, {fill: colors[2]}] } 
+            />
+          }
         >
           {
 
@@ -132,12 +144,31 @@ function App() {
           }
 
 
-
         </VictoryGroup>
       </VictoryChart>
 
     </div>
   );
+
+  function CustomToolTipLabel({ datum, data }) {
+    /*
+    * this constructs the label msg 
+    * for our chart tooltip
+    */
+
+    // TODO: need to figure out how to give each item its proper color:
+    // https://formidable.com/open-source/victory/docs/victory-label/#style
+    let labels = [];
+    let x = 0;
+    // TODO: needs to be dynamic!
+    let diff = moment(formatDateForLabel(datum["date"])).diff(formatDateForLabel(1399874039), "days");
+    let title = `At ${formatDateForLabel(datum["date"])} over ${diff} days`;
+    labels.push(title);
+    for (let pt_id of pt_ids) {
+      labels.push(Math.round(datum[pt_id] * 100)/ 100);
+    }
+    return labels;
+  }
 }
 
 
