@@ -18,6 +18,7 @@ function formatDateForLabel(dateString) {
 // https://stackblitz.com/edit/victory-chart-demo
 
 function App() {
+  var defaultYDomain = [-25, 25];
   var chartData = Object.values(data.data);
   var pt_ids = Object.keys(chartData[0]).filter(key => key !== "date");
   var chartTitle = "Cumulative Displacement for selected points from";
@@ -29,6 +30,20 @@ function App() {
     "#9500f9",
     "#00f932"
   ];
+  const getMinDisplacementVal = () => {
+    
+    var min = 0;
+    for (var pt_id of pt_ids) {
+      // TODO just assuming last set will have min/max. not necessarily true?
+      let lastindx = chartData.length - 1;
+      if(chartData[lastindx][pt_id] < min) {
+        min = chartData[lastindx][pt_id];
+      }
+    }
+    return min;
+  }
+  var minChartDomain = calculateDomainOfChart(getMinDisplacementVal(), defaultYDomain[0], "MIN");
+  var maxChartDomain = calculateDomainOfChart(15, defaultYDomain[1], "MAX");
   return (
     <div style={{ width: '100vw', height: '100vh', backgroundColor: "darkgrey" }}>
 
@@ -66,8 +81,9 @@ function App() {
           tickLabelComponent={<CustomizedAxisTick />}
           standalone={false}
           axisValue={-50} // TODO: make either min of data or range value variable
-          minDomain={{y: -50}}
+          minDomain={{y: minChartDomain}}
           crossAxis={false}
+          gridComponent={<LineSegment y1={32} y2={220}/>}
           style={{
 
             ticks: { stroke: "grey", size: 5 },
@@ -86,7 +102,7 @@ function App() {
         />
 
         <VictoryGroup
-          domain={{ x: [1399874039, 1480443090], y: [-50, 50] }} // TODO make dynamic
+          domain={{ x: [1399874039, 1480443090], y: [minChartDomain, maxChartDomain] }} // TODO make dynamic
           voronoiDimension="x"
           labels={CustomToolTipLabel}
           labelComponent={
@@ -149,28 +165,50 @@ function App() {
 
     </div>
   );
-
-  function CustomToolTipLabel({ datum, data }) {
-    /*
-    * this constructs the label msg 
-    * for our chart tooltip
-    */
-
-    // TODO: need to figure out how to give each item its proper color:
-    // https://formidable.com/open-source/victory/docs/victory-label/#style
-    let labels = [];
-    let x = 0;
-    // TODO: needs to be dynamic!
-    let diff = moment(formatDateForLabel(datum["date"])).diff(formatDateForLabel(1399874039), "days");
-    let title = `At ${formatDateForLabel(datum["date"])} over ${diff} days`;
-    labels.push(title);
-    for (let pt_id of pt_ids) {
-      labels.push(Math.round(datum[pt_id] * 100)/ 100);
-    }
-    return labels;
-  }
 }
 
+function CustomToolTipLabel({ datum, data }) {
+  /*
+  * this constructs the label msg 
+  * for our chart tooltip
+  */
+
+  // TODO: need to figure out how to give each item its proper color:
+  // https://formidable.com/open-source/victory/docs/victory-label/#style
+  let labels = [];
+  let x = 0;
+  // TODO: needs to be dynamic!
+  let pt_ids = Object.keys(data[0]).filter(key => key !== "date" && !key.startsWith("_"));
+  let diff = moment(formatDateForLabel(datum["date"])).diff(formatDateForLabel(1399874039), "days");
+  let title = `At ${formatDateForLabel(datum["date"])} over ${diff} days`;
+  labels.push(title);
+  for (let pt_id of pt_ids) {
+    labels.push(Math.round(datum[pt_id] * 100)/ 100);
+  }
+  return labels;
+}
+
+function calculateDomainOfChart(data, domain, type) {
+  // lets set the Y-Axis range to be either the set val
+  // or the min/max of the data rounded to nice decimal numbers
+  if (type.toUpperCase() === "MIN") {
+    let min = data < domain ? 
+      Math.ceil(Math.abs(data * 10)) / 10 : // round data down to 1 decimal
+      domain // don't round domain
+    min = data < 0 && min > 0 ? -min: min; //negative vals stay negative.
+    return min 
+  }
+  if (type.toUpperCase() === "MAX") {
+    let max = data > domain ?
+      Math.ceil(Math.abs(data * 10)) / 10 : // round data up to 1 decimal
+      domain // don't round domain
+    max = data < 0 && max > 0 ? -max: max; //negative vals stay negative.
+    return max
+  }
+  else {
+    throw console.error(`Invalid type: ${type}. Must be 'MIN' or 'MAX'`);
+  }
+}
 
 class CustomizedAxisTick extends PureComponent {
   //https://formidable.com/open-source/victory/docs/victory-axis#ticklabelcomponent
