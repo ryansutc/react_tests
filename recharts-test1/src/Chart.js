@@ -7,11 +7,9 @@ import { data } from './Data';
 export default class Chart extends PureComponent {
   render() {
     return (
-      <div style={{ width: '100%', height: 300 }}>
+      
         <ResponsiveContainer>
           <ComposedChart
-            width={500}
-            height={400}
             data={data}
             margin={{
               top: 20, right: 20, bottom: 20, left: 20,
@@ -27,7 +25,6 @@ export default class Chart extends PureComponent {
             <Line type="monotone" dataKey="uv" stroke="#ff7300" />
           </ComposedChart>
         </ResponsiveContainer>
-      </div>
     );
   }
 }
