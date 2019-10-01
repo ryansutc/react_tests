@@ -6,8 +6,7 @@ import { deletePost } from '../actions';
 function PostList({ posts, onDelete}) {
     
     return (
-        <div>
-            {posts.map(post => {
+            posts.map(post => {
                 return (
                     <Post 
                         post={ post } 
@@ -15,8 +14,7 @@ function PostList({ posts, onDelete}) {
                         key={ post.id } 
                     />
                 );
-            })}
-        </div>
+            })
     )
 } //should this part of file be in component folder?
 
