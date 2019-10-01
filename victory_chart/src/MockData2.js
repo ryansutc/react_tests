@@ -462,14 +462,20 @@ export const data = {
     "date": 1480443090
   }
 }
+
 /*
+
 let chartdata = Object.values(data);
 let pt_ids = Object.keys(chartdata[0]).filter(key => key !== "date");
+var min = 0;
 for (var pt_id of pt_ids) {
-  //create an element:
-  from Object.values(data)
+  let lastindx = chartdata.length - 1;
+  if(chartdata[lastindx][pt_id] < min) {
+    min = chartdata[lastindx][pt_id];
+  }
 }
-console.log(`drawing line for ${pt_id}`);
 
-});
+
+console.log(`the min is: ${min}`);
+
 */
