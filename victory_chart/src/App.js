@@ -31,12 +31,12 @@ function App() {
     "#00f932"
   ];
   const getMinDisplacementVal = () => {
-    
+
     var min = 0;
     for (var pt_id of pt_ids) {
       // TODO just assuming last set will have min/max. not necessarily true?
       let lastindx = chartData.length - 1;
-      if(chartData[lastindx][pt_id] < min) {
+      if (chartData[lastindx][pt_id] < min) {
         min = chartData[lastindx][pt_id];
       }
     }
@@ -57,7 +57,7 @@ function App() {
             voronoiDimension="x"
             title="Cumulative Displacement Chart"
             desc="Chart showing relative surface displacement over time"
-            
+
           />
         }
       >
@@ -81,9 +81,9 @@ function App() {
           tickLabelComponent={<CustomizedAxisTick />}
           standalone={false}
           axisValue={-50} // TODO: make either min of data or range value variable
-          minDomain={{y: minChartDomain}}
+          minDomain={{ y: minChartDomain }}
           crossAxis={false}
-          gridComponent={<LineSegment y1={32} y2={220}/>}
+          gridComponent={<LineSegment y1={32} y2={220} />}
           style={{
 
             ticks: { stroke: "grey", size: 5 },
@@ -106,17 +106,17 @@ function App() {
           voronoiDimension="x"
           labels={CustomToolTipLabel}
           labelComponent={
-            <VictoryTooltip 
-              cornerRadius={0} 
-              flyoutWidth={120} 
-              centerOffset={{y: (pt_ids.length * -10) + 10, x: 0}}
-              flyoutStyle={{ fill: "white" }} 
+            <VictoryTooltip
+              cornerRadius={0}
+              flyoutWidth={120}
+              centerOffset={{ y: (pt_ids.length * -10) + 10, x: 0 }}
+              flyoutStyle={{ fill: "white" }}
               flyoutComponent={
-                <Flyout 
-                  pointerLength={0} 
+                <Flyout
+                  pointerLength={0}
                   pointerWidth={0} />
               }
-              style={[{fill: "black", fontSize: 10}, { fill: colors[0]}, {fill: colors[1]}, {fill: colors[2]}] } 
+              style={[{ fill: "black", fontSize: 10 }, { fill: colors[0] }, { fill: colors[1] }, { fill: colors[2] }]}
             />
           }
         >
@@ -183,7 +183,7 @@ function CustomToolTipLabel({ datum, data }) {
   let title = `At ${formatDateForLabel(datum["date"])} over ${diff} days`;
   labels.push(title);
   for (let pt_id of pt_ids) {
-    labels.push(Math.round(datum[pt_id] * 100)/ 100);
+    labels.push(Math.round(datum[pt_id] * 100) / 100);
   }
   return labels;
 }
@@ -192,17 +192,17 @@ function calculateDomainOfChart(data, domain, type) {
   // lets set the Y-Axis range to be either the set val
   // or the min/max of the data rounded to nice decimal numbers
   if (type.toUpperCase() === "MIN") {
-    let min = data < domain ? 
+    let min = data < domain ?
       Math.ceil(Math.abs(data * 10)) / 10 : // round data down to 1 decimal
       domain // don't round domain
-    min = data < 0 && min > 0 ? -min: min; //negative vals stay negative.
-    return min 
+    min = data < 0 && min > 0 ? -min : min; //negative vals stay negative.
+    return min
   }
   if (type.toUpperCase() === "MAX") {
     let max = data > domain ?
       Math.ceil(Math.abs(data * 10)) / 10 : // round data up to 1 decimal
       domain // don't round domain
-    max = data < 0 && max > 0 ? -max: max; //negative vals stay negative.
+    max = data < 0 && max > 0 ? -max : max; //negative vals stay negative.
     return max
   }
   else {
