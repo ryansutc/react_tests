@@ -7,10 +7,6 @@ import {
 } from 'victory';
 import * as data from './MockData2';
 
-import VictoryElem from './VictoryElem';
-import ChartToolTip from "./ChartToolTip";
-import SimpleToolTip from "./SimpleToolTip";
-import CustomFlyOut from './CustomFlyOut';
 
 function formatDateForLabel(dateString) {
   let d = new Date(0);
