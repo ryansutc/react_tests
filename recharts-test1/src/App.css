@@ -22,3 +22,7 @@
 .App-link {
   color: #09d3ac;
 }
+
+body {
+  font-family: 'Roboto', 'Arial'
+}
