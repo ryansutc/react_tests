@@ -28,7 +28,6 @@ const useStyles = makeStyles(theme => ({
     }
   },
   button: {
-    //backgroundColor: "orange",
     textAlign: 'center',
     backgroundColor: theme.palette.text.secondary,
   },
