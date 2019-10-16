@@ -72,10 +72,6 @@ class App extends React.Component {
     }).then((ccWidget) => {
       view.ui.add(ccWidget, "bottom-left")
     });
-
-    
-
-    
   }
 
   handleMapClick(event) {

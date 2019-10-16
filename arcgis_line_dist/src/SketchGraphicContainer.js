@@ -41,7 +41,7 @@ class SketchGraphic extends React.Component {
         // NEW: Create a Line:
         var polylineGeom = {
           type: "polyline", // autocasts as new Polyline()
-          paths: [[ -44, 63], [-49, 67], [-45, 63.7]]
+          paths: [[ -123.125, 49.249], [-123.127, 49.253], [-123.25, 49.29]]
         };
         // Create a symbol for drawing the line
         var lineSymbol = {
@@ -78,7 +78,7 @@ class SketchGraphic extends React.Component {
 
   
   onClick() {
-    this.sketchViewModel.create("rectangle");
+    this.sketchViewModel.create("polyline");
   }
   render() {
     if (this.state.loading === false) {
