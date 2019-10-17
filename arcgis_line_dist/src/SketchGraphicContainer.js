@@ -63,7 +63,7 @@ class SketchGraphic extends React.Component {
           updateOnGraphicClick: false
         });
 
-        this.sketchViewModel.on("create", this.props.create.bind(this));
+        this.sketchViewModel.on("create", this.props.create);
       });
 
   }

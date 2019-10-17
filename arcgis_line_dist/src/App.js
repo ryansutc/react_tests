@@ -8,7 +8,7 @@ import StatusBox from './StatusBox';
 import { Map } from '@esri/react-arcgis';
 
 import FeatureLayer from './FeatureLayer';
-import { getSymbolForPt, updateSelectedPts } from './MapUtils';
+import { getSymbolForPt, updateSelectedPts, getLengthOfLine } from './MapUtils';
 
 class App extends React.Component {
   constructor(props) {
@@ -47,6 +47,10 @@ class App extends React.Component {
           }}>
           {this.createFeatureLayers()}
 
+          <StatusBox
+            status={this.state.sketchState}
+            distance={this.state.sketchLength}
+          />
         </Map>
       </div>
     );
@@ -66,7 +70,7 @@ class App extends React.Component {
         view={this.state.view}
         selectPts={this.selectPts}
         handleSelectPts={this.handleSelectPts}
-        create={this.handleSketchCreate}
+        create={this.handleSketchCreate.bind(this)}
       />, node_br
     );
 
@@ -76,16 +80,6 @@ class App extends React.Component {
     }).then((ccWidget) => {
       view.ui.add(ccWidget, "bottom-left")
     });
-
-    const node_tr = document.createElement("div");
-    view.ui.add(node_tr, "top-right");
-
-    ReactDOM.render(
-      <StatusBox
-
-      />,
-      node_tr
-    )
   }
 
   handleMapClick(event) {
@@ -101,6 +95,7 @@ class App extends React.Component {
   };
 
   handleSketchCreate(event) {
+    console.log("sketch Create called");
     if (event.state === "complete") {
       if (this.state.sketchState !== "complete") {
         this.setState({ sketchState: "complete" });
@@ -116,6 +111,11 @@ class App extends React.Component {
     }
     if (event.state === "cancel") {
       this.setState({ sketchState: "cancel" });
+    }
+    if (event.state === "start") {
+      if (this.state.sketchState !== "start") {
+        this.setState({ sketchState: "start"});
+      }
     }
   }
 
