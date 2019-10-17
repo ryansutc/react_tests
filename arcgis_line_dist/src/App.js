@@ -4,6 +4,7 @@ import './App.css';
 
 import SketchGraphicContainer from './SketchGraphicContainer';
 import CoordinateWidget from './CoordinateWidget';
+import StatusBox from './StatusBox';
 import { Map } from '@esri/react-arcgis';
 
 import FeatureLayer from './FeatureLayer';
@@ -17,7 +18,9 @@ class App extends React.Component {
       map: null,
       view: null,
       featureLayers: [],
-      selectedPts: null
+      selectedPts: null,
+      sketchState: "not started",
+      sketchLength: 0
     };
 
     this.handleMapLoad = this.handleMapLoad.bind(this);
@@ -63,15 +66,26 @@ class App extends React.Component {
         view={this.state.view}
         selectPts={this.selectPts}
         handleSelectPts={this.handleSelectPts}
+        create={this.handleSketchCreate}
       />, node_br
     );
 
-    CoordinateWidget({ 
+    CoordinateWidget({
       map: this.state.map,
       view: this.state.view
     }).then((ccWidget) => {
       view.ui.add(ccWidget, "bottom-left")
     });
+
+    const node_tr = document.createElement("div");
+    view.ui.add(node_tr, "top-right");
+
+    ReactDOM.render(
+      <StatusBox
+
+      />,
+      node_tr
+    )
   }
 
   handleMapClick(event) {
@@ -84,6 +98,25 @@ class App extends React.Component {
         this.handleSelectPts([features[0].graphic], event.native.shiftKey);
       }
     });
+  };
+
+  handleSketchCreate(event) {
+    if (event.state === "complete") {
+      if (this.state.sketchState !== "complete") {
+        this.setState({ sketchState: "complete" });
+        this.setState({ sketchLength: getLengthOfLine(event.graphic.geometry.paths[0]) });
+      }
+
+    }
+    if (event.state === "active") {
+      if (this.state.sketchState !== "active") {
+        this.setState({ sketchState: "active" });
+      }
+
+    }
+    if (event.state === "cancel") {
+      this.setState({ sketchState: "cancel" });
+    }
   }
 
   handleSelectPts(newSelection, shift = false) {

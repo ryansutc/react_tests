@@ -5,7 +5,7 @@ import Button from '@material-ui/core/Button';
 import Fab from '@material-ui/core/Fab';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
-import { featuresToGraphics } from './MapUtils';
+import { featuresToGraphics, getLengthOfLine } from './MapUtils';
 
 
 class SketchGraphic extends React.Component {
@@ -41,7 +41,7 @@ class SketchGraphic extends React.Component {
         // NEW: Create a Line:
         var polylineGeom = {
           type: "polyline", // autocasts as new Polyline()
-          paths: [[ -123.125, 49.249], [-123.127, 49.253], [-123.25, 49.29]]
+          paths: [[-123.125, 49.249], [-123.127, 49.253], [-123.25, 49.29]]
         };
         // Create a symbol for drawing the line
         var lineSymbol = {
@@ -58,25 +58,18 @@ class SketchGraphic extends React.Component {
 
         this.sketchViewModel = new SketchViewModel({
           view: this.props.view,
-          layer: this.graphicsLayer
+          layer: this.graphicsLayer,
+          enableRotation: false,
+          updateOnGraphicClick: false
         });
 
-        this.sketchViewModel.on("create", function(event) {
-          //when we do mouse up on the rectangle draw, lets check if shift was pressed
-          let root = document.getElementById("root").addEventListener("mouseup", this.shiftClickListener, { once: true });
-          if (event.state === "complete") {
-            //this.graphicsLayer.remove(event.graphic);
-          }
+        this.sketchViewModel.on("create", this.props.create.bind(this));
+      });
 
-          if (event.state === "cancel") {
-            console.log("selection was cancelled");
-            document.getElementById("root").removeEventListener("mouseup", this.shiftClickListener.bind(this));
-          }
-        }.bind(this));
-      })
   }
 
-  
+
+
   onClick() {
     this.sketchViewModel.create("polyline");
   }
