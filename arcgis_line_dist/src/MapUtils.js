@@ -74,6 +74,60 @@ export const updateSelectedPts = (_existingGraphics, newGraphics, shift = false)
   });
 }
 
+/**
+ * Add Sample Point Graphics along sketched polyline
+ * @param {Object} ptGeoms array[][] of pt coords 
+ * @param {*} viewGraphics map.view.graphics layer
+ */
+export function addSamplePts(ptGeoms, map) {
+  loadModules([
+    'esri/layers/GraphicsLayer',
+    'esri/Graphic',
+    'esri/symbols/SimpleMarkerSymbol',
+    'esri/geometry/SpatialReference'
+  ])
+  .then(([ GraphicsLayer, Graphic, SimpleMarkerSymbol, SpatialReference]) => {
+    let geom = ptGeoms;
+    let pointGraphics = [];
+
+    // Create a symbol for drawing the line
+    var ptSymbol = {
+      type: "simple-marker", // autocasts as SimpleLineSymbol()
+      color: "blue",
+      size: "8px",
+      outline: {
+        color: [255,255, 0],
+        width: 3
+      }
+    };
+
+    for (var pt of geom) {
+      var pointGeom = {
+        type: "point", // autocasts as new Polyline()
+        x: pt[0], //not sure if this will work. latitude/longitude?
+        y: pt[1],
+        SpatialReference: new SpatialReference({ wkid: 3857})
+        //need to specify wkid https://developers.arcgis.com/javascript/latest/api-reference/esri-geometry-SpatialReference.html
+      };
+
+      var ptGraphic = new Graphic({
+        geometry: pointGeom,
+        symbol: ptSymbol,
+      });
+      pointGraphics.push(ptGraphic);
+
+    }
+    var layer = new GraphicsLayer({
+      graphics: []
+    });
+
+    layer.graphics.addMany(pointGraphics);
+    map.add(layer);
+
+    //viewGraphics.addMany(pointGraphics);
+  });
+}
+
 function ptsAreEqual(pt1, pt2) {
   if (JSON.stringify(pt1.attributes) === JSON.stringify(pt2.attributes)) {
     return true;

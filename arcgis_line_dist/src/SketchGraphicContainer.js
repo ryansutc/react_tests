@@ -28,12 +28,9 @@ class SketchGraphic extends React.Component {
   loadSketchViewLayers() {
     loadModules([
       'esri/widgets/Sketch/SketchViewModel',
-      'esri/layers/GraphicsLayer',
-      'esri/Graphic',
-      'esri/geometry',
-      'esri/core/Collection'
+      'esri/layers/GraphicsLayer'
     ])
-      .then(([SketchViewModel, GraphicsLayer, Graphic, geometry, Collection]) => {
+      .then(([SketchViewModel, GraphicsLayer, ]) => {
         this.setState({ loading: false }); //change ui now that esri libraries are loaded
         this.graphicsLayer = new GraphicsLayer();
         this.props.map.add(this.graphicsLayer);
@@ -46,38 +43,18 @@ class SketchGraphic extends React.Component {
         });
 
         this.sketchViewModel.on("create", this.props.create);
+
       });
 
   }
 
-
-  addSamplePts() {
-    let geom = this.props.samplePtsGeom;
-    let pointGraphics = [];
-    for (var pt in geom) {
-      var pointGeom = {
-        type: "point", // autocasts as new Polyline()
-        paths: [[-123.125, 49.249], [-123.127, 49.253], [-123.25, 49.29]]
-      };
-    }
-    
-    // Create a symbol for drawing the line
-    var lineSymbol = {
-      type: "simple-line", // autocasts as SimpleLineSymbol()
-      color: [226, 119, 40],
-      width: 4
-    };
-
-    var polylineGraphic = new Graphic({
-      geometry: polylineGeom,
-      symbol: lineSymbol,
-    });
-    this.props.view.graphics.add(polylineGraphic);
-  }
+  
   onClick() {
     this.sketchViewModel.create("polyline");
   }
   render() {
+    console.log("render called for sketchViewContainer");
+      
     if (this.state.loading === false) {
       return (
         <Fab color="secondary" label="edit"

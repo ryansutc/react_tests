@@ -4,7 +4,6 @@ export function getLengthOfLine(geom) {
   for(var i=1; i < geom.length; i++) {
     let deltaX = geom[i-1][0] - geom[i][0];
     let deltaY = geom[i-1][1] - geom[i][1];
-    console.log(deltaX + " " + deltaY);
     polylineLen += Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
     
   }

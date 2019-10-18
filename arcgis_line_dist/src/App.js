@@ -8,7 +8,7 @@ import StatusBox from './StatusBox';
 import { Map } from '@esri/react-arcgis';
 
 import FeatureLayer from './FeatureLayer';
-import { getSymbolForPt, updateSelectedPts } from './MapUtils';
+import { getSymbolForPt, updateSelectedPts, addSamplePts } from './MapUtils';
 import { getLengthOfLine, getSampleCoordsForPolyline} from './GeomUtils';
 
 class App extends React.Component {
@@ -109,9 +109,13 @@ class App extends React.Component {
       if (this.state.sketchState !== "complete") {
         this.setState({ sketchState: "complete" });
         let polylineGeom = event.graphic.geometry.paths[0];
-        let samplePts = getSampleCoordsForPolyline(polylineGeom, 20);
-        //this.state.view.graphics.addMany(updatedSelectedPts)
-        this.setState({samplePtsGeom: samplePts});
+        let samplePtGeoms = getSampleCoordsForPolyline(polylineGeom, 20);
+        
+        this.setState({samplePtsGeom: samplePtGeoms});
+        //add the samplePtGeom coords to map view as graphics
+        addSamplePts(samplePtGeoms, this.state.map);
+        console.log("addSamplePts called");
+        
       }
 
     }
