@@ -83,9 +83,3 @@ function ptsAreEqual(pt1, pt2) {
   }
 }
 
-export function getLengthOfLine(geom) {
-  let deltaX = geom[0][0] - geom[1][0];
-  let deltaY = geom[0][1] - geom[1][1];
-
-  return Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
-}

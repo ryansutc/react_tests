@@ -8,7 +8,8 @@ import StatusBox from './StatusBox';
 import { Map } from '@esri/react-arcgis';
 
 import FeatureLayer from './FeatureLayer';
-import { getSymbolForPt, updateSelectedPts, getLengthOfLine } from './MapUtils';
+import { getSymbolForPt, updateSelectedPts } from './MapUtils';
+import { getLengthOfLine, getSampleCoordsForPolyline} from './GeomUtils';
 
 class App extends React.Component {
   constructor(props) {
@@ -20,7 +21,8 @@ class App extends React.Component {
       featureLayers: [],
       selectedPts: null,
       sketchState: "not started",
-      sketchLength: 0
+      sketchLength: 0,
+      samplePtsGeom: null
     };
 
     this.handleMapLoad = this.handleMapLoad.bind(this);
@@ -71,6 +73,8 @@ class App extends React.Component {
         selectPts={this.selectPts}
         handleSelectPts={this.handleSelectPts}
         create={this.handleSketchCreate.bind(this)}
+        measure={this.handleMeasure.bind(this)}
+        samplePtsGeom={this.state.samplePtsGeom}
       />, node_br
     );
 
@@ -94,12 +98,20 @@ class App extends React.Component {
     });
   };
 
+  handleMeasure(event) {
+    console.log("handle measure is firing!");
+    console.log(getLengthOfLine(event.graphic.geometry.paths[0]));
+  }
+
   handleSketchCreate(event) {
     console.log("sketch Create called");
     if (event.state === "complete") {
       if (this.state.sketchState !== "complete") {
         this.setState({ sketchState: "complete" });
-        this.setState({ sketchLength: getLengthOfLine(event.graphic.geometry.paths[0]) });
+        let polylineGeom = event.graphic.geometry.paths[0];
+        let samplePts = getSampleCoordsForPolyline(polylineGeom, 20);
+        //this.state.view.graphics.addMany(updatedSelectedPts)
+        this.setState({samplePtsGeom: samplePts});
       }
 
     }
@@ -107,11 +119,15 @@ class App extends React.Component {
       if (this.state.sketchState !== "active") {
         this.setState({ sketchState: "active" });
       }
-
+      if(event.toolEventInfo.type === "cursor-update") {
+        this.setState({sketchLength: getLengthOfLine(event.graphic.geometry.paths[0]) })
+      }
     }
+
     if (event.state === "cancel") {
       this.setState({ sketchState: "cancel" });
     }
+
     if (event.state === "start") {
       if (this.state.sketchState !== "start") {
         this.setState({ sketchState: "start"});
@@ -138,6 +154,7 @@ class App extends React.Component {
     }
     return featureLayerComponents
   }
+
 
   handleMapLoad(map, view) {
     console.log('Map Loaded.')

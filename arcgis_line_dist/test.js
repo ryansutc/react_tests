@@ -1,18 +1,22 @@
-function getLengthOfLine(geom) {
-  let deltaX = geom[0][0] - geom[1][0];
-  let deltaY = geom[0][1] - geom[1][1];
 
-  return Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
-}
 
-const dummyGeom1 = [
-  [-13706264.797979908, 6317287.498162713],
-  [-13706283.01149055, 6317333.031939314]
-];
+//###################
 
 const dummyGeom = [
   [-10, 0],
-  [10, 0]
+  [10, 5],
+  [10, 10]
 ];
-
-console.log(getLengthOfLine(dummyGeom1));
+const sampleDist = 10;
+const polylineLength = getLengthOfLine(dummyGeom);
+let sampleDists = getSampleDistsForLength(polylineLength, sampleDist);
+let sampleCoords = getSampleCoordsForPolyline(dummyGeom, sampleDist);
+console.log("Length of Line: " + polylineLength);
+console.log("sample dist: " + sampleDist);
+console.log("Sample dists for line: " + sampleDists);
+console.log("Sample coords are: " + JSON.stringify(sampleCoords));
+// console.log(getCoordsAlongVector(
+//   dummyGeom[0],
+//   dummyGeom[1],
+//   8
+// ));

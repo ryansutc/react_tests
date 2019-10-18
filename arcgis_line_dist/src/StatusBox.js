@@ -15,7 +15,7 @@ const useStyles = makeStyles({
 
 function StatusBox(props) {
   const classes = useStyles();
-  console.log(props);
+  //console.log(props);
   return (
     <div className={classes.root}>
       <p><span>Status: {props.status} </span></p>

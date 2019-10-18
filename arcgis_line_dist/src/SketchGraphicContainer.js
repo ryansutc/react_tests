@@ -38,24 +38,6 @@ class SketchGraphic extends React.Component {
         this.graphicsLayer = new GraphicsLayer();
         this.props.map.add(this.graphicsLayer);
 
-        // NEW: Create a Line:
-        var polylineGeom = {
-          type: "polyline", // autocasts as new Polyline()
-          paths: [[-123.125, 49.249], [-123.127, 49.253], [-123.25, 49.29]]
-        };
-        // Create a symbol for drawing the line
-        var lineSymbol = {
-          type: "simple-line", // autocasts as SimpleLineSymbol()
-          color: [226, 119, 40],
-          width: 4
-        };
-
-        var polylineGraphic = new Graphic({
-          geometry: polylineGeom,
-          symbol: lineSymbol,
-        });
-        this.props.view.graphics.add(polylineGraphic);
-
         this.sketchViewModel = new SketchViewModel({
           view: this.props.view,
           layer: this.graphicsLayer,
@@ -69,7 +51,29 @@ class SketchGraphic extends React.Component {
   }
 
 
+  addSamplePts() {
+    let geom = this.props.samplePtsGeom;
+    let pointGraphics = [];
+    for (var pt in geom) {
+      var pointGeom = {
+        type: "point", // autocasts as new Polyline()
+        paths: [[-123.125, 49.249], [-123.127, 49.253], [-123.25, 49.29]]
+      };
+    }
+    
+    // Create a symbol for drawing the line
+    var lineSymbol = {
+      type: "simple-line", // autocasts as SimpleLineSymbol()
+      color: [226, 119, 40],
+      width: 4
+    };
 
+    var polylineGraphic = new Graphic({
+      geometry: polylineGeom,
+      symbol: lineSymbol,
+    });
+    this.props.view.graphics.add(polylineGraphic);
+  }
   onClick() {
     this.sketchViewModel.create("polyline");
   }
