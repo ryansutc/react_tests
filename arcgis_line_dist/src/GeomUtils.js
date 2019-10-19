@@ -1,25 +1,27 @@
+import { loadModules } from 'esri-loader';
+
 export function getLengthOfLine(geom) {
   let polylineLen = 0;
 
-  for(var i=1; i < geom.length; i++) {
-    let deltaX = geom[i-1][0] - geom[i][0];
-    let deltaY = geom[i-1][1] - geom[i][1];
+  for (var i = 1; i < geom.length; i++) {
+    let deltaX = geom[i - 1][0] - geom[i][0];
+    let deltaY = geom[i - 1][1] - geom[i][1];
     polylineLen += Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
-    
+
   }
   return polylineLen;
 }
 
 function getCoordsAlongVector(coord1, coord2, distAlong) {
-  if(distAlong === 0) return coord1;
+  if (distAlong === 0) return coord1;
   const x = 0;
   const y = 1;
   const distRatio = distAlong / getLengthOfLine([coord1, coord2]);
   let xDiff = coord1[x] - coord2[x];
   let yDiff = coord1[y] - coord2[y];
 
-  const newX = (1-distRatio) * coord1[x] + (coord2[x] * distRatio);
-  const newY  = (1-distRatio) * coord1[y] + (coord2[y] * distRatio);
+  const newX = (1 - distRatio) * coord1[x] + (coord2[x] * distRatio);
+  const newY = (1 - distRatio) * coord1[y] + (coord2[y] * distRatio);
 
   return [newX, newY];
 
@@ -37,7 +39,7 @@ function getSampleDistsForLength(length, interval) {
   let sampleDists = [];
   while (i < length) {
     sampleDists.push(i);
-    i+=interval;
+    i += interval;
   }
   // could be option to explictly add total of length here. -rs
 
@@ -58,12 +60,12 @@ export function getSampleCoordsForPolyline(polylineGeom, interval) {
   let accumLen = 0; //
   const polylineLength = getLengthOfLine(polylineGeom);
   let sampleDists = getSampleDistsForLength(polylineLength, interval);
-  if(!sampleDists.length) throw "sampleDists is an empty array!";
+  if (!sampleDists.length) throw "sampleDists is an empty array!";
 
   while (vEnd < polylineGeom.length) { //loop through vertices
-    if(!sampleDists.length) break;
-    let verticeLen = getLengthOfLine(polylineGeom.slice(vStart, vEnd+1)); // len of current vertice
-    if((verticeLen + accumLen) > sampleDists[0]) {
+    if (!sampleDists.length) break;
+    let verticeLen = getLengthOfLine(polylineGeom.slice(vStart, vEnd + 1)); // len of current vertice
+    if ((verticeLen + accumLen) > sampleDists[0]) {
       // we've got a new samplePt to add:
       let distAlong = sampleDists[0] - accumLen;
 
@@ -86,4 +88,41 @@ export function getSampleCoordsForPolyline(polylineGeom, interval) {
   }
 
   return sampleCoords;
+}
+
+export function projectGeom2(geom) {
+  return new Promise((resolve) => {
+    loadModules([
+      'esri/tasks/GeometryService',
+      'esri/geometry/SpatialReference',
+      'esri/tasks/support/ProjectParameters'
+    ]).then(([GeometryService, SpatialReference, ProjectParameters]) => {
+      var geomSer = new GeometryService({
+        url: 'https://sampleserver6.arcgisonline.com/arcgis/rest/services/Utilities/Geometry/GeometryServer'
+      });
+
+      var params = new ProjectParameters({
+        geometries: [geom],
+        outSpatialReference: new SpatialReference({ wkid: 102100 }),
+        transformation: null
+      })
+
+      geomSer.project(params).then((projGeom) => {
+        return resolve(projGeom);
+      });
+    }).catch((err) => console.error(err));
+  })
+
+}
+
+export function projectGeom(geom) {
+  return new Promise((resolve) => {
+    loadModules([
+      "esri/geometry/support/webMercatorUtils"
+    ]).then(([webMercatorUtils]) => {
+      let geomLatLong = webMercatorUtils.webMercatorToGeographic(geom);
+      return resolve(geomLatLong);
+
+    })
+  }).catch(err => console.error(err));
 }

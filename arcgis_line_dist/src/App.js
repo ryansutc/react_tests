@@ -9,7 +9,7 @@ import { Map } from '@esri/react-arcgis';
 
 import FeatureLayer from './FeatureLayer';
 import { getSymbolForPt, updateSelectedPts, addSamplePts } from './MapUtils';
-import { getLengthOfLine, getSampleCoordsForPolyline} from './GeomUtils';
+import { getLengthOfLine, getSampleCoordsForPolyline } from './GeomUtils';
 
 class App extends React.Component {
   constructor(props) {
@@ -30,7 +30,7 @@ class App extends React.Component {
     this.handleFail = this.handleFail.bind(this);
     this.createFeatureLayers = this.createFeatureLayers.bind(this);
     this.renderViewContent = this.renderViewContent.bind(this);
-    this.featureLayers = ["https://services8.arcgis.com/vVBb77z9fDbXITgG/ArcGIS/rest/services/SamplePoints/FeatureServer/0"];
+    this.featureLayers = []; //["https://services8.arcgis.com/vVBb77z9fDbXITgG/ArcGIS/rest/services/SamplePoints/FeatureServer/0"];
   }
 
   render() {
@@ -110,21 +110,19 @@ class App extends React.Component {
         this.setState({ sketchState: "complete" });
         let polylineGeom = event.graphic.geometry.paths[0];
         let samplePtGeoms = getSampleCoordsForPolyline(polylineGeom, 20);
-        
-        this.setState({samplePtsGeom: samplePtGeoms});
+
+        this.setState({ samplePtsGeom: samplePtGeoms });
         //add the samplePtGeom coords to map view as graphics
         addSamplePts(samplePtGeoms, this.state.map);
         console.log("addSamplePts called");
-        
       }
-
     }
     if (event.state === "active") {
       if (this.state.sketchState !== "active") {
         this.setState({ sketchState: "active" });
       }
-      if(event.toolEventInfo.type === "cursor-update") {
-        this.setState({sketchLength: getLengthOfLine(event.graphic.geometry.paths[0]) })
+      if (event.toolEventInfo.type === "cursor-update") {
+        this.setState({ sketchLength: getLengthOfLine(event.graphic.geometry.paths[0]) })
       }
     }
 
@@ -134,7 +132,7 @@ class App extends React.Component {
 
     if (event.state === "start") {
       if (this.state.sketchState !== "start") {
-        this.setState({ sketchState: "start"});
+        this.setState({ sketchState: "start" });
       }
     }
   }
