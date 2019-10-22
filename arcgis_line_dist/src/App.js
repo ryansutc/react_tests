@@ -7,6 +7,7 @@ import SketchGraphicContainer from './SketchGraphicContainer';
 import CoordinateWidget from './CoordinateWidget';
 import StatusBox from './StatusBox';
 import QueryButton from './QueryButton';
+import BufferButton from './BufferButton';
 import { Map } from '@esri/react-arcgis';
 
 import FeatureLayer from './FeatureLayer';
@@ -27,8 +28,9 @@ class App extends React.Component {
       sketchLength: 0,
       samplePtsGeom: null,
       layerLoaded: false,
-      samplePtsGraphicsLayer: null, 
-      transectLinesGraphicsLayer: null
+      samplePtsGraphicsLayer: null,
+      transectLinesGraphicsLayer: null,
+      bufferPtsGraphicsLayer: null
     };
 
     this.handleMapLoad = this.handleMapLoad.bind(this);
@@ -66,9 +68,18 @@ class App extends React.Component {
               featureLayer={this.state.featureLayers[0]}
               samplePtsGraphicsLayer={this.state.samplePtsGraphicsLayer}
               dist={this.state.dist}
-            /> : <div />
+            />
+            : <div />
           }
-          
+          {this.state.layerLoaded && this.state.samplePtsGraphicsLayer ?
+            <BufferButton
+              loading={false}
+              samplePtsGraphicsLayer={this.state.samplePtsGraphicsLayer}
+              bufferPtsGraphicsLayer={this.state.bufferPtsGraphicsLayer}
+              dist={this.state.dist}
+            />
+            : <div />
+          }
         </Map>
       </div>
     );
@@ -137,7 +148,7 @@ class App extends React.Component {
         this.setState({ sketchState: "active" });
       }
       if (event.toolEventInfo.type === "cursor-update") {
-        this.setState({ sketchLength: getLengthOfLine(event.graphic.geometry.paths[0])})
+        this.setState({ sketchLength: getLengthOfLine(event.graphic.geometry.paths[0]) })
       }
     }
 
@@ -150,6 +161,7 @@ class App extends React.Component {
         this.setState({ sketchState: "start" });
         this.state.samplePtsGraphicsLayer.removeAll();
         this.state.transectLinesGraphicsLayer.removeAll();
+        this.state.bufferPtsGraphicsLayer.removeAll();
       }
     }
   }
@@ -178,35 +190,43 @@ class App extends React.Component {
 
   handleLayersLoaded(featureLayer) {
     console.log("feature layer loaded " + featureLayer);
-    this.setState({layerLoaded: true, featureLayers: [featureLayer]});
+    this.setState({ layerLoaded: true, featureLayers: [featureLayer] });
   }
 
   handleMapLoad(map, view) {
     loadModules([
       'esri/layers/GraphicsLayer'
     ])
-    .then(([GraphicsLayer]) => {
-      var samplePtsGraphicsLayer = new GraphicsLayer({
-        graphics: [],
-        title: "Sample Pt Centroids",
-        id: "SamplePts"
-      });
+      .then(([GraphicsLayer]) => {
+        var samplePtsGraphicsLayer = new GraphicsLayer({
+          graphics: [],
+          title: "Sample Pt Centroids",
+          id: "SamplePts"
+        });
 
-      var transectLinesGraphicsLayer = new GraphicsLayer({
-        graphics: [],
-        title: "Transect Lines",
-        id: "TransectLines"
-      });
+        var transectLinesGraphicsLayer = new GraphicsLayer({
+          graphics: [],
+          title: "Transect Lines",
+          id: "TransectLines"
+        });
 
-      map.layers.addMany([samplePtsGraphicsLayer, transectLinesGraphicsLayer]);
+        var bufferPtsGraphicsLayer = new GraphicsLayer({
+          graphics: [],
+          title: "Buffer Pts",
+          id: "BufferPts"
+        });
 
-      console.log('Map Loaded.')
-      this.setState({ map: map, view: view, featureLayers: this.featureLayers, 
-        samplePtsGraphicsLayer: samplePtsGraphicsLayer,
-        transectLinesGraphicsLayer: transectLinesGraphicsLayer
+        map.layers.addMany([samplePtsGraphicsLayer, transectLinesGraphicsLayer, bufferPtsGraphicsLayer]);
+
+        console.log('Map Loaded.')
+        this.setState({
+          map: map, view: view, featureLayers: this.featureLayers,
+          samplePtsGraphicsLayer: samplePtsGraphicsLayer,
+          transectLinesGraphicsLayer: transectLinesGraphicsLayer,
+          bufferPtsGraphicsLayer: bufferPtsGraphicsLayer
+        });
+        this.handleViewLoad(view);
       });
-      this.handleViewLoad(view);
-    });
   }
 
   handleViewLoad(view) {
