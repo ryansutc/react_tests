@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { loadModules } from 'esri-loader';
 
 const FeatureLayer = (props) => {
-
+  
   const [layer, setLayer] = useState(null);
   useEffect(() => {
     if (props.map.layers.length === 0) {
@@ -25,6 +25,10 @@ const FeatureLayer = (props) => {
               where: "value >= " + props.minVal + " && value <= " + props.maxVal
             }
           }
+
+          //send callback to app:
+          props.layerLoaded(featureLayer);
+          
         })
 
       }).catch((err) => console.error(err));

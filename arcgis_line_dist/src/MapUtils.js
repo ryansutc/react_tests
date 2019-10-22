@@ -78,9 +78,10 @@ export const updateSelectedPts = (_existingGraphics, newGraphics, shift = false)
 /**
  * Add Sample Point Graphics along sketched polyline
  * @param {Object} ptGeoms array[][] of pt coords 
- * @param {*} viewGraphics map.view.graphics layer
+ * @param {*} GraphicsLayer map.view.graphics layer
+ * @param {number} dist distance for each sample Pt
  */
-export function addSamplePts(ptGeoms, map) {
+export function addSamplePts(ptGeoms, samplePtsGraphicsLayer, dist) {
   loadModules([
     'esri/layers/GraphicsLayer',
     'esri/Graphic',
@@ -102,12 +103,7 @@ export function addSamplePts(ptGeoms, map) {
         }
       };
 
-      var layer = new GraphicsLayer({
-        graphics: [],
-        title: "Sample Pt Centroids",
-        id: "SamplePtCentroids_" + Math.random()
-      });
-
+      let samplePtId = 0;
       for (var pt of geom) {
         var pointGeom = {
           type: "point", // autocasts as new Polyline()
@@ -120,6 +116,7 @@ export function addSamplePts(ptGeoms, map) {
         // DO we need to project this to lat/long?
         projectGeom(pointGeom).then((pointGeomLatLong) => {
           var ptAtts = {
+            id: samplePtId,
             Name: "Sample Centroid for Transect"
           };
 
@@ -129,11 +126,12 @@ export function addSamplePts(ptGeoms, map) {
             attributes: ptAtts
           });
 
-          layer.graphics.add(ptGraphic);
+          samplePtsGraphicsLayer.add(ptGraphic);
+          samplePtId += dist; // will need to adjust this to get last length val of line
         });
       } //end for
 
-      map.add(layer);
+      //map.add(layer);
 
       //viewGraphics.addMany(pointGraphics);
     });

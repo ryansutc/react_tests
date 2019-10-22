@@ -1,11 +1,8 @@
 import React from 'react';
 import { loadModules } from 'esri-loader';
 import EditIcon from '@material-ui/icons/Edit';
-import Button from '@material-ui/core/Button';
 import Fab from '@material-ui/core/Fab';
 import CircularProgress from '@material-ui/core/CircularProgress';
-
-import { featuresToGraphics, getLengthOfLine } from './MapUtils';
 
 
 class SketchGraphic extends React.Component {
@@ -16,7 +13,6 @@ class SketchGraphic extends React.Component {
     this.loadSketchViewLayers = this.loadSketchViewLayers.bind(this);
     this.shiftClickListener = this.shiftClickListener.bind(this);
     this.SketchViewModel = null;
-    this.graphicsLayer = null;
     this.loadSketchViewLayers();
 
     this.shift = false;
@@ -32,14 +28,12 @@ class SketchGraphic extends React.Component {
     ])
       .then(([SketchViewModel, GraphicsLayer, ]) => {
         this.setState({ loading: false }); //change ui now that esri libraries are loaded
-        this.graphicsLayer = new GraphicsLayer();
-        this.props.map.add(this.graphicsLayer);
-
+  
         this.sketchViewModel = new SketchViewModel({
           view: this.props.view,
-          layer: this.graphicsLayer,
+          layer: this.props.transectLinesGraphicsLayer,
           enableRotation: false,
-          updateOnGraphicClick: false
+          updateOnGraphicClick: false,
         });
 
         this.sketchViewModel.on("create", this.props.create);

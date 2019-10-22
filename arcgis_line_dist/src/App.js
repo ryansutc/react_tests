@@ -1,10 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { loadModules } from 'esri-loader';
 import './App.css';
 
 import SketchGraphicContainer from './SketchGraphicContainer';
 import CoordinateWidget from './CoordinateWidget';
 import StatusBox from './StatusBox';
+import QueryButton from './QueryButton';
 import { Map } from '@esri/react-arcgis';
 
 import FeatureLayer from './FeatureLayer';
@@ -16,13 +18,17 @@ class App extends React.Component {
     super(props);
 
     this.state = {
+      dist: 20,
       map: null,
       view: null,
       featureLayers: [],
       selectedPts: null,
       sketchState: "not started",
       sketchLength: 0,
-      samplePtsGeom: null
+      samplePtsGeom: null,
+      layerLoaded: false,
+      samplePtsGraphicsLayer: null, 
+      transectLinesGraphicsLayer: null
     };
 
     this.handleMapLoad = this.handleMapLoad.bind(this);
@@ -30,10 +36,11 @@ class App extends React.Component {
     this.handleFail = this.handleFail.bind(this);
     this.createFeatureLayers = this.createFeatureLayers.bind(this);
     this.renderViewContent = this.renderViewContent.bind(this);
-    this.featureLayers = []; //["https://services8.arcgis.com/vVBb77z9fDbXITgG/ArcGIS/rest/services/SamplePoints/FeatureServer/0"];
+    this.featureLayers = ["https://services8.arcgis.com/vVBb77z9fDbXITgG/ArcGIS/rest/services/SamplePoints/FeatureServer/0"];
   }
 
   render() {
+
     return (
       <div style={{ width: '100vw', height: '100vh' }}>
         <Map
@@ -53,6 +60,15 @@ class App extends React.Component {
             status={this.state.sketchState}
             distance={this.state.sketchLength}
           />
+          {this.state.layerLoaded && this.state.samplePtsGraphicsLayer ?
+            <QueryButton
+              loading={false} //if we've got featureLayers, we're loaded?
+              featureLayer={this.state.featureLayers[0]}
+              samplePtsGraphicsLayer={this.state.samplePtsGraphicsLayer}
+              dist={this.state.dist}
+            /> : <div />
+          }
+          
         </Map>
       </div>
     );
@@ -75,6 +91,7 @@ class App extends React.Component {
         create={this.handleSketchCreate.bind(this)}
         measure={this.handleMeasure.bind(this)}
         samplePtsGeom={this.state.samplePtsGeom}
+        transectLinesGraphicsLayer={this.state.transectLinesGraphicsLayer}
       />, node_br
     );
 
@@ -104,17 +121,15 @@ class App extends React.Component {
   }
 
   handleSketchCreate(event) {
-    console.log("sketch Create called");
     if (event.state === "complete") {
       if (this.state.sketchState !== "complete") {
         this.setState({ sketchState: "complete" });
         let polylineGeom = event.graphic.geometry.paths[0];
-        let samplePtGeoms = getSampleCoordsForPolyline(polylineGeom, 20);
+        let samplePtGeoms = getSampleCoordsForPolyline(polylineGeom, this.state.dist);
 
         this.setState({ samplePtsGeom: samplePtGeoms });
         //add the samplePtGeom coords to map view as graphics
-        addSamplePts(samplePtGeoms, this.state.map);
-        console.log("addSamplePts called");
+        addSamplePts(samplePtGeoms, this.state.samplePtsGraphicsLayer, this.state.dist);
       }
     }
     if (event.state === "active") {
@@ -122,7 +137,7 @@ class App extends React.Component {
         this.setState({ sketchState: "active" });
       }
       if (event.toolEventInfo.type === "cursor-update") {
-        this.setState({ sketchLength: getLengthOfLine(event.graphic.geometry.paths[0]) })
+        this.setState({ sketchLength: getLengthOfLine(event.graphic.geometry.paths[0])})
       }
     }
 
@@ -133,6 +148,8 @@ class App extends React.Component {
     if (event.state === "start") {
       if (this.state.sketchState !== "start") {
         this.setState({ sketchState: "start" });
+        this.state.samplePtsGraphicsLayer.removeAll();
+        this.state.transectLinesGraphicsLayer.removeAll();
       }
     }
   }
@@ -148,20 +165,48 @@ class App extends React.Component {
 
   createFeatureLayers() {
     let featureLayerComponents = []
-    for (var layer in this.state.featureLayers) {
+    console.log("create Feature layers called");
+    for (var layer in this.featureLayers) {
       featureLayerComponents.push(
         <FeatureLayer key={"1"}
-          layerID={this.state.featureLayers[layer]}
+          layerID={this.featureLayers[layer]}
+          layerLoaded={this.handleLayersLoaded.bind(this)}
         />)
     }
     return featureLayerComponents
   }
 
+  handleLayersLoaded(featureLayer) {
+    console.log("feature layer loaded " + featureLayer);
+    this.setState({layerLoaded: true, featureLayers: [featureLayer]});
+  }
 
   handleMapLoad(map, view) {
-    console.log('Map Loaded.')
-    this.setState({ map: map, view: view, featureLayers: this.featureLayers })
-    this.handleViewLoad(view);
+    loadModules([
+      'esri/layers/GraphicsLayer'
+    ])
+    .then(([GraphicsLayer]) => {
+      var samplePtsGraphicsLayer = new GraphicsLayer({
+        graphics: [],
+        title: "Sample Pt Centroids",
+        id: "SamplePts"
+      });
+
+      var transectLinesGraphicsLayer = new GraphicsLayer({
+        graphics: [],
+        title: "Transect Lines",
+        id: "TransectLines"
+      });
+
+      map.layers.addMany([samplePtsGraphicsLayer, transectLinesGraphicsLayer]);
+
+      console.log('Map Loaded.')
+      this.setState({ map: map, view: view, featureLayers: this.featureLayers, 
+        samplePtsGraphicsLayer: samplePtsGraphicsLayer,
+        transectLinesGraphicsLayer: transectLinesGraphicsLayer
+      });
+      this.handleViewLoad(view);
+    });
   }
 
   handleViewLoad(view) {
