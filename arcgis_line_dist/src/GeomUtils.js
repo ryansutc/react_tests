@@ -115,7 +115,11 @@ export function projectGeom2(geom) {
 
 }
 
-export function projectGeom(geom) {
+/**
+ * Converts WGS coords to Lat/Long
+ * @param {} geom 
+ */
+export function projectToLatLong(geom) {
   return new Promise((resolve) => {
     loadModules([
       "esri/geometry/support/webMercatorUtils"
@@ -123,6 +127,20 @@ export function projectGeom(geom) {
       let geomLatLong = webMercatorUtils.webMercatorToGeographic(geom);
       return resolve(geomLatLong);
 
+    })
+  }).catch(err => console.error(err));
+}
+
+/** 
+ * Converts Lat/Long to WGS XY coords
+ */
+export function projectToXY(geom) {
+  return new Promise((resolve) => {
+    loadModules([
+      "esri/geometry/support/webMercatorUtils"
+    ]).then(([webMercatorUtils]) => {
+      let geomXY = webMercatorUtils.geographicToWebMercator(geom);
+      return resolve(geomXY);
     })
   }).catch(err => console.error(err));
 }

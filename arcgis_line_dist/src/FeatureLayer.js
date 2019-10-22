@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { loadModules } from 'esri-loader';
+import { getRenderer, labelClass } from './RenderHelpers';
 
 const FeatureLayer = (props) => {
   
@@ -9,8 +10,8 @@ const FeatureLayer = (props) => {
       loadModules(['esri/layers/FeatureLayer']).then(([FeatureLayer]) => {
         const featureLayer = FeatureLayer({
           url: props.layerID,
-          //renderer: getRenderer(props.minVal, props.midVal, props.maxVal), // replace this with dynamic values.
-          //labelingInfo: [labelClass],
+          renderer: getRenderer(-40, 0, 40), // replace this with dynamic values.
+          labelingInfo: [labelClass],
           filter: { where: "value >= " + props.minVal + " && value <= " + props.maxVal }
         });
 

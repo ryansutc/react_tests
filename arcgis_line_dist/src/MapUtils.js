@@ -1,6 +1,6 @@
 import React from 'react';
 import { loadModules } from 'esri-loader';
-import { projectGeom } from './GeomUtils';
+import { projectToLatLong, projectToXY  } from './GeomUtils';
 
 export function getSymbolForPt() {
   let symbol = {
@@ -114,7 +114,7 @@ export function addSamplePts(ptGeoms, samplePtsGraphicsLayer, dist) {
         };
 
         // DO we need to project this to lat/long?
-        projectGeom(pointGeom).then((pointGeomLatLong) => {
+        projectToLatLong(pointGeom).then((pointGeomLatLong) => {
           var ptAtts = {
             id: samplePtId,
             Name: "Sample Centroid for Transect"

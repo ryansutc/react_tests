@@ -3,7 +3,7 @@ import { loadModules } from 'esri-loader';
 import BackupIcon from '@material-ui/icons/Backup';
 import Fab from '@material-ui/core/Fab'; //floating action buttons
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { projectGeom } from './GeomUtils';
+import { projectToLatLong, projectToXY } from './GeomUtils';
 import { makeStyles } from '@material-ui/styles';
 
 const useStyles = makeStyles({
@@ -29,29 +29,33 @@ function BufferButton(props) {
     ])
       .then(([Graphic, SpatialReference,
         GeometryEngine]) => {
-
+        let bufferId = 0;
         for (var item of samplePtsGraphicsLayer.graphics.items) {
 
-          projectGeom(item.geometry).then((pointGeomLatLong) => {
-            var ptAtts = {
-              Name: "Sample Buffer"
-            };
-            var geoBuffer = GeometryEngine.geodesicBuffer(item.geometry, dist, "meters");
+          var ptAtts = {
+            Name: "Sample Buffer",
+            id: bufferId
+          };
 
-            var polygonGraphic = new Graphic({
-              geometry: geoBuffer,
-              symbol: {
-                type: "simple-fill",
-                color: [255, 255, 10, 0.3],
-                style: "solid"
-              }
+          projectToXY(item.geometry).then(pointGeomXY => {
+            let geoBufferXY = GeometryEngine.buffer(pointGeomXY, dist / 2, "meters");
+            projectToLatLong(geoBufferXY).then(geoBufferLatLong => {
+              var polygonGraphic = new Graphic({
+                geometry: geoBufferXY,
+                symbol: {
+                  type: "simple-fill",
+                  color: [255, 255, 10, 0.3],
+                  style: "solid"
+                }
+              });
+    
+              bufferPtsGraphicsLayer.add(polygonGraphic);
+              bufferId += dist;
             });
-
-            bufferPtsGraphicsLayer.add(polygonGraphic);
           });
         };
       }); //end load modules
-  }
+  } //end bufferPts
 
   if (loading === false && samplePtsGraphicsLayer) {
     return (

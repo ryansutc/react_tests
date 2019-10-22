@@ -17,15 +17,15 @@ const useStyles = makeStyles({
 
 function QueryButton(props) {
   const classes = useStyles();
-  const {loading, featureLayer, samplePtsGraphicsLayer, dist} = props;
+  const {loading, featureLayer, bufferPtsGraphicsLayer, dist} = props;
 
   const getPtIdsAroundSamplePts = async function() {
     let transectPtData = {};
     let samplePtId = 0;
-    for (var samplePt of samplePtsGraphicsLayer.graphics.items) {
+    for (var bufferPt of bufferPtsGraphicsLayer.graphics.items) {
       var query = featureLayer.createQuery();
-      query.geometry = samplePt.geometry; //lets start by just looking at 1st pt!
-      query.distance = dist;
+      query.geometry = bufferPt.geometry; //lets start by just looking at 1st pt!
+      query.distance = 0;
       query.units = "meters";
       query.spatialRelationship = "intersects";
       query.returnGeometry = false;
@@ -48,7 +48,7 @@ function QueryButton(props) {
   }; //end getPtIdsAroundSamplePts
 
   const queryFeatures = () => {
-    if(samplePtsGraphicsLayer.graphics.length == 0) {
+    if(bufferPtsGraphicsLayer.graphics.length == 0) {
       alert("You don't have any sample pts");
       return
     }
@@ -65,7 +65,7 @@ function QueryButton(props) {
     })
   }
 
-  if(loading === false && samplePtsGraphicsLayer) {
+  if(loading === false && bufferPtsGraphicsLayer) {
     return (
       <div className={classes.root}>
         <Fab onClick={queryFeatures}

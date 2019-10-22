@@ -8,6 +8,7 @@ import CoordinateWidget from './CoordinateWidget';
 import StatusBox from './StatusBox';
 import QueryButton from './QueryButton';
 import BufferButton from './BufferButton';
+import DummyDataGrabber from './DummyDataGrabber';
 import { Map } from '@esri/react-arcgis';
 
 import FeatureLayer from './FeatureLayer';
@@ -19,7 +20,7 @@ class App extends React.Component {
     super(props);
 
     this.state = {
-      dist: 20,
+      dist: 40,
       map: null,
       view: null,
       featureLayers: [],
@@ -62,11 +63,19 @@ class App extends React.Component {
             status={this.state.sketchState}
             distance={this.state.sketchLength}
           />
+
+          {this.state.layerLoaded && this.state.bufferPtsGraphicsLayer ? 
+            <DummyDataGrabber
+              loading={false}
+              bufferPtsGraphicsLayer={this.state.bufferPtsGraphicsLayer}
+
+            /> : <div />
+          }
           {this.state.layerLoaded && this.state.samplePtsGraphicsLayer ?
             <QueryButton
               loading={false} //if we've got featureLayers, we're loaded?
               featureLayer={this.state.featureLayers[0]}
-              samplePtsGraphicsLayer={this.state.samplePtsGraphicsLayer}
+              bufferPtsGraphicsLayer={this.state.bufferPtsGraphicsLayer}
               dist={this.state.dist}
             />
             : <div />
