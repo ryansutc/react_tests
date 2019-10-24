@@ -58,10 +58,10 @@ function prepareDisplacementDataTotals(displacementData, pt_ids = null, startDat
 }
 
 function averageDisplacementsForEachSampleArea(pt_data,sampleIds, dispfield) {
-  averages = {};
+  let averages = {};
   for (var sampleId of sampleIds) {
     let totalDisp = 0;
-    for (var pt_id of sampleId.pt_ids {
+    for (var pt_id of sampleId.pt_ids) {
       for (var row of pt_data) {
         if(row.pt_id === pt_id) {
           totalDisp += row[dispfield];
@@ -74,7 +74,6 @@ function averageDisplacementsForEachSampleArea(pt_data,sampleIds, dispfield) {
   return averages;
 }
   
-
 
 function DummyDataGrabber(props) {
   const {bufferPtsGraphicsLayer, loading} = props;
@@ -102,7 +101,7 @@ function DummyDataGrabber(props) {
   if(loading === false && bufferPtsGraphicsLayer) {
     return (
       <div className={classes.root}>
-        <Fab onClick={() => processDisplacementData(displacementData, pt_ids)}
+        <Fab onClick={() => console.log("Pass")}
           color="secondary"
           label="Query Features"
         >

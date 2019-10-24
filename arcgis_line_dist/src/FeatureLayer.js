@@ -12,7 +12,8 @@ const FeatureLayer = (props) => {
           url: props.layerID,
           renderer: getRenderer(-40, 0, 40), // replace this with dynamic values.
           labelingInfo: [labelClass],
-          filter: { where: "value >= " + props.minVal + " && value <= " + props.maxVal }
+          filter: { where: "value >= " + props.minVal + " && value <= " + props.maxVal },
+          id: "dataPts"
         });
 
         setLayer(featureLayer);

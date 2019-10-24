@@ -77,6 +77,7 @@ class App extends React.Component {
               featureLayer={this.state.featureLayers[0]}
               bufferPtsGraphicsLayer={this.state.bufferPtsGraphicsLayer}
               dist={this.state.dist}
+              view={this.state.view}
             />
             : <div />
           }
@@ -226,7 +227,7 @@ class App extends React.Component {
         });
 
         map.layers.addMany([samplePtsGraphicsLayer, transectLinesGraphicsLayer, bufferPtsGraphicsLayer]);
-
+        
         console.log('Map Loaded.')
         this.setState({
           map: map, view: view, featureLayers: this.featureLayers,
