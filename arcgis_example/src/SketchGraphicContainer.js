@@ -75,7 +75,7 @@ class SketchGraphic extends React.Component {
       spatialRelationship: "intersects",
       distance: 1, //should be scale based
       returnGeometry: true,
-      outFields: ["pt_id"]
+      outFields: ['*']
     })
       .then((featureSet) => {
         featuresToGraphics(featureSet.features).then((graphics) => {
