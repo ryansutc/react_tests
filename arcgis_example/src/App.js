@@ -6,6 +6,7 @@ import { Map } from '@esri/react-arcgis';
 
 import FeatureLayer from './FeatureLayer';
 import Controller from './Controller';
+import StatsForm from './StatsForm';
 import { updateSelectedPts, featuresToGraphics, getSymbolForPt } from './MapUtils';
 
 class App extends React.Component {
@@ -19,9 +20,10 @@ class App extends React.Component {
       minVal: -40,
       midVal: 0,
       maxVal: 40,
-      selectedPts: null
+      selectedPts: null,
+      selectionStats: null
     };
-
+    this.getSummaryFromSelection = this.getSummaryFromSelection.bind(this);
     this.handleMapLoad = this.handleMapLoad.bind(this);
     this.handleSelectPts = this.handleSelectPts.bind(this);
     this.handleMapClick = this.handleMapClick.bind(this);
@@ -47,7 +49,9 @@ class App extends React.Component {
             zoom: 12
           }}>
           {this.createFeatureLayers()}
-
+          <StatsForm
+            selectionStats={this.state.selectionStats}
+          />
         </Map>
       </div>
     );
@@ -77,24 +81,56 @@ class App extends React.Component {
   }
   handleMapClick(event) {
     this.state.view.hitTest(event).then(response => {
-      if (response.results.length) {
-        let features = response.results.filter(result => {
-          return result.graphic.layer.layerId === 0
-        })
-        features.forEach(feature => feature.graphic.symbol = getSymbolForPt(feature));
+
+      let features = response.results.filter(result => {
+        return result.graphic.layer.layerId === 0
+      })
+      features.forEach(feature => feature.graphic.symbol = getSymbolForPt(feature));
+      if (features.length) {
         this.handleSelectPts([features[0].graphic], event.native.shiftKey);
       }
+      else {
+        this.handleSelectPts(null, event.native.shiftKey);
+      }
+
     });
   }
-
 
   handleSelectPts(newSelection, shift = false) {
 
     updateSelectedPts(this.state.selectedPts, newSelection, shift).then((updatedSelectedPts) => {
       this.state.view.graphics.removeAll();
-      this.state.view.graphics.addMany(updatedSelectedPts)
-      this.setState({ selectedPts: updatedSelectedPts })
+      this.state.view.graphics.addMany(updatedSelectedPts);
+      this.setState({ selectedPts: updatedSelectedPts });
+      this.setState({ selectionStats: this.getSummaryFromSelection(updatedSelectedPts) });
+
     });
+  }
+
+  /**
+   * Returns an object with {count: 5, min: 10, max:35, avg:15} structure for pt data
+   * @param {graphics} selectedPtGraphics array of Graphics 
+   */
+  getSummaryFromSelection(selectedPtGraphics) {
+    let count = 0;
+    let max = -999;
+    let min = 999;
+    let total = 0;
+
+    if (!selectedPtGraphics.items || !selectedPtGraphics.items.length) {
+      return null;
+    }
+
+    for (var graphic of selectedPtGraphics.items) {
+      let val = graphic.attributes.value;
+      count += 1;
+      max = val > max ? val : max;
+      min = val < min ? val : min;
+      total += val;
+    }
+
+    return { "count": count, "min": min, "max": max, "avg": total / count }
+
   }
 
   createFeatureLayers() {

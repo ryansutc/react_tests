@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import NumberFormat from 'react-number-format';
-import { FormControl } from '@material-ui/core';
+import { FormControl, Typography } from '@material-ui/core';
 
 
 export default function Controller(props) {
@@ -19,6 +19,7 @@ export default function Controller(props) {
   return (
     <div style={{ width: '300px', padding: '10px', backgroundColor: 'white' }}>
       <form>
+        <Typography>Point Symbology Style</Typography>
         <FormControl>
           <label htmlFor="minVal">Min Value</label>
           <NumberFormat value={minVal} id="minVal" onChange={onChange} onBlur={props.onChange}>

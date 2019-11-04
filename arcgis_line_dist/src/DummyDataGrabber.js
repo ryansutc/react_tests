@@ -6,15 +6,15 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 
 import { makeStyles } from '@material-ui/styles';
 
-import {displacementData} from './dummyDisplacements';
+import { displacementData } from './dummyDisplacements';
 
 const useStyles = makeStyles({
   root: {
     position: "absolute",
     bottom: 240,
     right: 30,
-    zIndex: 3500 
-  }  
+    zIndex: 3500
+  }
 });
 
 /** Get all pt_ids in a dummyData set.
@@ -46,8 +46,8 @@ function prepareDisplacementDataTotals(displacementData, pt_ids = null, startDat
 
   for (var feature of displacementData.features) {
     let atts = feature.attributes;
-    if(pt_ids.includes(atts.pt_id)) {
-      if(atts.acquisition_time > startDate && atts.acquisition_time < endDate) {
+    if (pt_ids.includes(atts.pt_id)) {
+      if (atts.acquisition_time > startDate && atts.acquisition_time < endDate) {
         rawData[atts.pt_id].vals.push(atts.disp_los);
       }
     }
@@ -63,20 +63,20 @@ function averageDisplacementsForEachSampleArea(pt_data,sampleIds, dispfield) {
     let totalDisp = 0;
     for (var pt_id of sampleId.pt_ids) {
       for (var row of pt_data) {
-        if(row.pt_id === pt_id) {
+        if (row.pt_id === pt_id) {
           totalDisp += row[dispfield];
         }
       }
     }
-    averages[sampleId] = totalDisp;  
+    averages[sampleId] = totalDisp;
   }
 
   return averages;
 }
-  
+
 
 function DummyDataGrabber(props) {
-  const {bufferPtsGraphicsLayer, loading} = props;
+  const { bufferPtsGraphicsLayer, loading } = props;
   const classes = useStyles();
 
   const pt_ids = [
@@ -98,10 +98,10 @@ function DummyDataGrabber(props) {
     38741597
   ];
 
-  if(loading === false && bufferPtsGraphicsLayer) {
+  if (loading === false && bufferPtsGraphicsLayer) {
     return (
       <div className={classes.root}>
-        <Fab onClick={() => console.log("Pass")}
+        <Fab onClick={() => prepareDisplacementDataTotals(displacementData, pt_ids)}
           color="secondary"
           label="Query Features"
         >
@@ -113,7 +113,7 @@ function DummyDataGrabber(props) {
   else {
     return (
       <div className={classes.root}>
-         <CircularProgress />
+        <CircularProgress />
       </div>
     )
   }
