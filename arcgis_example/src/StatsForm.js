@@ -13,7 +13,7 @@ export default function StatsForm(props) {
       position: "absolute", right: 30, top: 30
     }}>
       <Paper>
-        <Typography variant='subtitle'>
+        <Typography>
           Selection Stats
         </Typography>
         <Typography component="p">
