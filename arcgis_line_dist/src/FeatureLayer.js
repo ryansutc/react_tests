@@ -21,13 +21,7 @@ const FeatureLayer = (props) => {
         props.map.add(featureLayer);
         featureLayer.when(() => {
 
-          props.view.extent = featureLayer.fullExtent;
-          if (props.hide) {
-            layer.filter = {
-              where: "value >= " + props.minVal + " && value <= " + props.maxVal
-            }
-          }
-
+        props.view.extent = featureLayer.fullExtent;
           //send callback to app:
           props.layerLoaded(featureLayer);
           

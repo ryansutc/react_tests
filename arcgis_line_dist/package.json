@@ -8,6 +8,7 @@
     "@material-ui/icons": "^4.5.1",
     "@material-ui/styles": "^4.5.0",
     "esri-loader": "^2.11.0",
+    "moment": "^2.24.0",
     "react": "^16.10.2",
     "react-dom": "^16.10.2",
     "react-scripts": "3.2.0"
