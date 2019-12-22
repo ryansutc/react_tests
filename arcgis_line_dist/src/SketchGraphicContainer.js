@@ -4,6 +4,16 @@ import EditIcon from '@material-ui/icons/Edit';
 import Fab from '@material-ui/core/Fab';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
+import { withStyles } from '@material-ui/styles';
+
+const styles = {
+  root: {
+    position: "absolute",
+    bottom: 100,
+    right: 30,
+    zIndex: 3500 
+  }  
+};
 
 class SketchGraphic extends React.Component {
   constructor(props) {
@@ -37,7 +47,7 @@ class SketchGraphic extends React.Component {
         });
 
         this.sketchViewModel.on("create", this.props.create);
-
+        
       });
 
   }
@@ -48,19 +58,21 @@ class SketchGraphic extends React.Component {
   }
   render() {
     console.log("render called for sketchViewContainer");
-      
+     const {classes} = this.props; 
     if (this.state.loading === false) {
       return (
-        <Fab color="secondary" label="edit"
-          onClick={this.onClick}
-        >
-          <EditIcon />
-        </Fab >
+        <div className={classes.root}>
+          <Fab color="secondary" label="edit"
+            onClick={this.onClick}
+          >
+            <EditIcon />
+          </Fab >
+        </div>
       )
     }
     else {
       return (
-        <div>
+        <div className={classes.root}>
           <CircularProgress />
         </div>
       )
@@ -76,4 +88,4 @@ class SketchGraphic extends React.Component {
   }
 }
 
-export default SketchGraphic;
+export default withStyles(styles)(SketchGraphic);

@@ -57,7 +57,7 @@ function prepareDisplacementDataTotals(displacementData, pt_ids = null, startDat
   return rawData;
 }
 
-function averageDisplacementsForEachSampleArea(pt_data, sampleIds, dispfield) {
+function averageDisplacementsForEachSampleArea(pt_data,sampleIds, dispfield) {
   let averages = {};
   for (var sampleId of sampleIds) {
     let totalDisp = 0;
@@ -73,7 +73,6 @@ function averageDisplacementsForEachSampleArea(pt_data, sampleIds, dispfield) {
 
   return averages;
 }
-
 
 
 function DummyDataGrabber(props) {

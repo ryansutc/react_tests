@@ -12,7 +12,8 @@ const FeatureLayer = (props) => {
           url: props.layerID,
           renderer: getRenderer(-40, 0, 40), // replace this with dynamic values.
           labelingInfo: [labelClass],
-          filter: { where: "value >= " + props.minVal + " && value <= " + props.maxVal }
+          filter: { where: "value >= " + props.minVal + " && value <= " + props.maxVal },
+          id: "dataPts"
         });
 
         setLayer(featureLayer);
@@ -20,13 +21,7 @@ const FeatureLayer = (props) => {
         props.map.add(featureLayer);
         featureLayer.when(() => {
 
-          props.view.extent = featureLayer.fullExtent;
-          if (props.hide) {
-            layer.filter = {
-              where: "value >= " + props.minVal + " && value <= " + props.maxVal
-            }
-          }
-
+        props.view.extent = featureLayer.fullExtent;
           //send callback to app:
           props.layerLoaded(featureLayer);
           

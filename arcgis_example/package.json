@@ -9,6 +9,7 @@
     "esri-loader": "^2.10.0",
     "express": "^4.17.1",
     "react": "^16.9.0",
+    "react-app-polyfill": "^1.0.4",
     "react-dom": "^16.9.0",
     "react-number-format": "^4.2.0",
     "react-scripts": "3.2.0"

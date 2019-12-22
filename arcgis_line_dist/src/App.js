@@ -14,13 +14,17 @@ import { Map } from '@esri/react-arcgis';
 import FeatureLayer from './FeatureLayer';
 import { getSymbolForPt, updateSelectedPts, addSamplePts } from './MapUtils';
 import { getLengthOfLine, getSampleCoordsForPolyline } from './GeomUtils';
+import {generateTransectGraphicsAndChart} from './transectToolUtil';
+import { loadGraphicsLayers } from './GraphicsLayerUtils';
+
+import moment from "moment";
 
 class App extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      dist: 40,
+      dist: 40, 
       map: null,
       view: null,
       featureLayers: [],
@@ -29,9 +33,8 @@ class App extends React.Component {
       sketchLength: 0,
       samplePtsGeom: null,
       layerLoaded: false,
-      samplePtsGraphicsLayer: null,
-      transectLinesGraphicsLayer: null,
-      bufferPtsGraphicsLayer: null
+      transectPtIds: null,
+      transectPtData: null
     };
 
     this.handleMapLoad = this.handleMapLoad.bind(this);
@@ -61,31 +64,19 @@ class App extends React.Component {
 
           <StatusBox
             status={this.state.sketchState}
-            distance={this.state.sketchLength}
+            distance={Math.round(this.state.sketchLength)}
           />
 
-          {this.state.layerLoaded && this.state.bufferPtsGraphicsLayer ? 
-            <DummyDataGrabber
-              loading={false}
-              bufferPtsGraphicsLayer={this.state.bufferPtsGraphicsLayer}
-
-            /> : <div />
-          }
-          {this.state.layerLoaded && this.state.samplePtsGraphicsLayer ?
-            <QueryButton
-              loading={false} //if we've got featureLayers, we're loaded?
-              featureLayer={this.state.featureLayers[0]}
-              bufferPtsGraphicsLayer={this.state.bufferPtsGraphicsLayer}
-              dist={this.state.dist}
-            />
-            : <div />
-          }
-          {this.state.layerLoaded && this.state.samplePtsGraphicsLayer ?
-            <BufferButton
-              loading={false}
-              samplePtsGraphicsLayer={this.state.samplePtsGraphicsLayer}
-              bufferPtsGraphicsLayer={this.state.bufferPtsGraphicsLayer}
-              dist={this.state.dist}
+         {this.state.layerLoaded ?
+            <SketchGraphicContainer
+              map={this.state.map}
+              view={this.state.view}
+              selectPts={this.selectPts}
+              handleSelectPts={this.handleSelectPts}
+              create={this.handleSketchCreate.bind(this)}
+              measure={this.handleMeasure.bind(this)}
+              samplePtsGeom={this.state.samplePtsGeom}
+              transectLinesGraphicsLayer={this.state.map.findLayerById("transectLines")}
             />
             : <div />
           }
@@ -101,19 +92,6 @@ class App extends React.Component {
   renderViewContent(view) {
     const node_br = document.createElement("div");
     view.ui.add(node_br, "bottom-right");
-
-    ReactDOM.render(
-      <SketchGraphicContainer
-        map={this.state.map}
-        view={this.state.view}
-        selectPts={this.selectPts}
-        handleSelectPts={this.handleSelectPts}
-        create={this.handleSketchCreate.bind(this)}
-        measure={this.handleMeasure.bind(this)}
-        samplePtsGeom={this.state.samplePtsGeom}
-        transectLinesGraphicsLayer={this.state.transectLinesGraphicsLayer}
-      />, node_br
-    );
 
     CoordinateWidget({
       map: this.state.map,
@@ -139,7 +117,7 @@ class App extends React.Component {
     console.log("handle measure is firing!");
     console.log(getLengthOfLine(event.graphic.geometry.paths[0]));
   }
-
+  
   handleSketchCreate(event) {
     if (event.state === "complete") {
       if (this.state.sketchState !== "complete") {
@@ -149,7 +127,40 @@ class App extends React.Component {
 
         this.setState({ samplePtsGeom: samplePtGeoms });
         //add the samplePtGeom coords to map view as graphics
-        addSamplePts(samplePtGeoms, this.state.samplePtsGraphicsLayer, this.state.dist);
+        let startTime = new Date();
+        console.log(startTime);
+        generateTransectGraphicsAndChart(
+          this.state.view, 
+          samplePtGeoms, 
+          this.state.dist,
+          this.state.sketchLength
+        ).then(results => {
+          let ptIdData = results[0];
+          let transectPtData = results[1];
+          // totals pt_ids in all buffers
+          
+          let allPtIds = ptIdData.reduce((pt_ids = 0, ptIdGroup) => pt_ids += parseInt(ptIdGroup.pt_ids.length), 0); 
+
+          if(allPtIds) {
+            // we have at least 1 displacement pt somewhere along our transect:
+            this.setState({
+              transectPtIds: ptIdData,
+              transectPtData: transectPtData
+            });
+            let endTime = new Date();
+            console.log(endTime);
+            alert(`complete! ${allPtIds} Points analyzed for ${transectPtData.length} transects in ${moment(startTime).diff(endTime, "seconds")} seconds`);
+          } 
+          else {
+            // handle no data selected:
+            this.props.enqueueSnackbar(
+              "No points available along transect. You could try increasing the buffer size or you may need to move/zoom to an area of the map with point data.",
+              { variant: "warning" }
+            );
+            this.setState({transectPtIds: null, transectPtData: null});
+          // we do NOT remove transect graphics or deactivate TransectTools b/c user still could adjust buffer area
+          }
+        });
       }
     }
     if (event.state === "active") {
@@ -168,9 +179,9 @@ class App extends React.Component {
     if (event.state === "start") {
       if (this.state.sketchState !== "start") {
         this.setState({ sketchState: "start" });
-        this.state.samplePtsGraphicsLayer.removeAll();
-        this.state.transectLinesGraphicsLayer.removeAll();
-        this.state.bufferPtsGraphicsLayer.removeAll();
+        this.state.map.findLayerById("samplePts").removeAll();
+        this.state.map.findLayerById("transectLines").removeAll();
+        this.state.map.findLayerById("bufferPts").removeAll();
       }
     }
   }
@@ -192,7 +203,8 @@ class App extends React.Component {
         <FeatureLayer key={"1"}
           layerID={this.featureLayers[layer]}
           layerLoaded={this.handleLayersLoaded.bind(this)}
-        />)
+        />
+      )
     }
     return featureLayerComponents
   }
@@ -203,39 +215,13 @@ class App extends React.Component {
   }
 
   handleMapLoad(map, view) {
-    loadModules([
-      'esri/layers/GraphicsLayer'
-    ])
-      .then(([GraphicsLayer]) => {
-        var samplePtsGraphicsLayer = new GraphicsLayer({
-          graphics: [],
-          title: "Sample Pt Centroids",
-          id: "SamplePts"
-        });
+    loadGraphicsLayers(map);
 
-        var transectLinesGraphicsLayer = new GraphicsLayer({
-          graphics: [],
-          title: "Transect Lines",
-          id: "TransectLines"
-        });
+    this.setState({
+      map: map, view: view, featureLayers: this.featureLayers
+    });
+    this.handleViewLoad(view);
 
-        var bufferPtsGraphicsLayer = new GraphicsLayer({
-          graphics: [],
-          title: "Buffer Pts",
-          id: "BufferPts"
-        });
-
-        map.layers.addMany([samplePtsGraphicsLayer, transectLinesGraphicsLayer, bufferPtsGraphicsLayer]);
-
-        console.log('Map Loaded.')
-        this.setState({
-          map: map, view: view, featureLayers: this.featureLayers,
-          samplePtsGraphicsLayer: samplePtsGraphicsLayer,
-          transectLinesGraphicsLayer: transectLinesGraphicsLayer,
-          bufferPtsGraphicsLayer: bufferPtsGraphicsLayer
-        });
-        this.handleViewLoad(view);
-      });
   }
 
   handleViewLoad(view) {
