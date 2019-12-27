@@ -8,20 +8,26 @@
       "type": "chrome",
       "request": "launch",
       "name": "Launch Chrome",
-      "url": "http://localhost:3000",
+      "url": "http://192.168.99.100:3000",
       "webRoot": "${workspaceFolder}",
       "runtimeArgs": [
         "--load-extension=${env:userprofile}/AppData/Local/Google/Chrome/User Data/Default/Extensions/lmhkpmbekcpmknklioeibfkpmmfibljd/2.17.0_0"
-      ]
+      ],
+      "userDataDir": "${workspaceRoot}/.vscode/chrome",
+      "sourceMaps": true,
+      "sourceMapPathOverrides": {
+        "/app/*": "${webRoot}/*"
+      },
     },
     {
       "type": "node",
-      "request": "launch",
+      "request": "attach",
       "name": "Attach to Remote",
       "address": "192.168.99.100",
       "port": 9229,
-      "localRoot": "${workspaceFolder}",
-      "remoteRoot": "/app"
+      "localRoot": "${workspaceFolder}/src",
+      "remoteRoot": "/app/src",
+      "protocol": "inspector"
     }
   ]
 }
