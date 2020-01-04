@@ -1,0 +1,17 @@
+# FROM node:latest
+# WORKDIR /app
+# COPY ./package.json /app
+
+# ENV PATH /app/node_modules/.bin:$PATH
+
+# RUN npm install --only=production
+# RUN npm install react-scripts@3.0.1 -g
+# COPY . /app/
+# CMD ["npm", "run", "build"]
+
+FROM nginx:latest
+# RUN rm /etc/nginx/conf.d/default.conf
+# COPY nginx.conf /etc/nginx/conf.d 
+WORKDIR /root/
+# COPY --from=0 /app/build/ .
+COPY ./build/ .

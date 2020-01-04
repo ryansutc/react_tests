@@ -38,3 +38,18 @@ Now you're ```c:/dev``` directory will be mounted in VM as ```/home/docker/devmn
 3) run ```docker-compose up``` to start up dev build
 
 4) Change a file and watch it get updated in docker!
+
+
+---
+debug your docker container to see what its doing:
+```sudo docker exec -it arcgis_example_frontend_1 /bin/bash```
+
+---
+Build for production: 
+* create image:
+```docker build --tag nginx:1 -f dockerfile.prod .```
+* run container from image:
+```docker run --name nginx1st -p 8000:80  nginx```
+
+
+```docker-compose -f docker-compose.prod.yml up```

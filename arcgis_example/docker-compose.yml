@@ -5,7 +5,7 @@ services:
     container_name: arcgis_example
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: dockerfile
 
     ports:
       - '3000:3000'
