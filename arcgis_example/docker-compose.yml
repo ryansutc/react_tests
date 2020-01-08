@@ -1,0 +1,19 @@
+version: '3.3'
+services:
+  frontend:
+    environment: 'COMPOSE_CONVERT_WINDOWS_PATHS=1'
+    container_name: arcgis_example
+    build:
+      context: .
+      dockerfile: dockerfile
+
+    ports:
+      - '3000:3000'
+      - '9229:9229'
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
+    volumes: 
+      - '/home/docker/devmnt/react_tests/arcgis_example/src/:/app/src/'
+      - '/home/docker/devmnt/react_tests/arcgis_example/public:/app/public/'
+      - '/app/node_modules'

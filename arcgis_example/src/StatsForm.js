@@ -23,7 +23,7 @@ export default function StatsForm(props) {
           Max: {selectionStats.max}
         </Typography>
         <Typography component="p">
-          Avg: {selectionStats.avg}
+          Avg: {Math.round(selectionStats.avg)}
         </Typography>
         <Typography component="p">
           Count: {selectionStats.count}
