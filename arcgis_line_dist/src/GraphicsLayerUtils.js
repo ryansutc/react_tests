@@ -46,7 +46,7 @@ export const addClientsideFeatureLayer = async function(id, sourceFeatureSet, ma
       let csfl = new FeatureLayer({
         source: sourceFeatureSet.features,
         fields: sourceFeatureSet.fields,
-        objectIdField: "objectid",
+        objectIdField: "FID",
         id: id,
         renderer: {
           type: "simple",  // autocasts as new SimpleRenderer()

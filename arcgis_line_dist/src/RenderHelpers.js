@@ -21,7 +21,7 @@ export function getRenderer(min, mid, max, filter = false) {
     type: "simple", //autocasts
     symbol: {
       type: "simple-marker", //autocasts
-      size: 12,
+      size: 7,
       color: "white",
       outline: {
         width: 0.5,

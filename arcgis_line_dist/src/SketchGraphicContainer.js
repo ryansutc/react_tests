@@ -57,7 +57,6 @@ class SketchGraphic extends React.Component {
     this.sketchViewModel.create("polyline");
   }
   render() {
-    console.log("render called for sketchViewContainer");
      const {classes} = this.props; 
     if (this.state.loading === false) {
       return (

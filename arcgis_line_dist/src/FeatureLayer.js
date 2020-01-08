@@ -10,9 +10,19 @@ const FeatureLayer = (props) => {
       loadModules(['esri/layers/FeatureLayer']).then(([FeatureLayer]) => {
         const featureLayer = FeatureLayer({
           url: props.layerID,
-          renderer: getRenderer(-40, 0, 40), // replace this with dynamic values.
-          labelingInfo: [labelClass],
-          filter: { where: "value >= " + props.minVal + " && value <= " + props.maxVal },
+          renderer: {
+            type: "simple", //autocasts
+            symbol: {
+              type: "simple-marker", //autocasts
+              size: 6,
+              color: "grey",
+              outline: null
+            }
+          },
+          
+          //getRenderer(-8, 0, 8), // replace this with dynamic values.
+          //labelingInfo: [labelClass],
+          //filter: { where: "value >= " + props.minVal + " && value <= " + props.maxVal },
           id: "dataPts"
         });
 

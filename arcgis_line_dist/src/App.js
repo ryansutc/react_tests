@@ -14,9 +14,9 @@ import { Map } from '@esri/react-arcgis';
 import FeatureLayer from './FeatureLayer';
 import { getSymbolForPt, updateSelectedPts, addSamplePts } from './MapUtils';
 import { getLengthOfLine, getSampleCoordsForPolyline } from './GeomUtils';
-import {generateTransectGraphicsAndChart} from './transectToolUtil';
+import {generateTransectGraphicsAndChart, generateTransectGraphicsAndChart_v2} from './transectToolUtil';
 import { loadGraphicsLayers } from './GraphicsLayerUtils';
-
+import {projectToLatLong} from './GeomUtils';
 import moment from "moment";
 
 class App extends React.Component {
@@ -42,7 +42,7 @@ class App extends React.Component {
     this.handleFail = this.handleFail.bind(this);
     this.createFeatureLayers = this.createFeatureLayers.bind(this);
     this.renderViewContent = this.renderViewContent.bind(this);
-    this.featureLayers = ["https://services8.arcgis.com/vVBb77z9fDbXITgG/ArcGIS/rest/services/SamplePoints/FeatureServer/0"];
+    this.featureLayers = ["https://services8.arcgis.com/vVBb77z9fDbXITgG/ArcGIS/rest/services/SamplePoints/FeatureServer/0"]; //["http://35.182.66.117:6080/arcgis/rest/services/motionary2_public_dev/lapaz_disp/MapServer/0"]; 
   }
 
   render() {
@@ -57,7 +57,7 @@ class App extends React.Component {
           }}
           loadElement={"loading spacecraft..."}
           viewProperties={{
-            center: [-123.1257, 49.249],
+            center: [-123.1257, 49.249], //[-68.1,-16.5]
             zoom: 4
           }}>
           {this.createFeatureLayers()}
@@ -122,6 +122,9 @@ class App extends React.Component {
     if (event.state === "complete") {
       if (this.state.sketchState !== "complete") {
         this.setState({ sketchState: "complete" });
+        let xyGuy = projectToLatLong(event.graphic.geometry).then((xyGuy) => {
+          console.log(xyGuy);
+        });
         let polylineGeom = event.graphic.geometry.paths[0];
         let samplePtGeoms = getSampleCoordsForPolyline(polylineGeom, this.state.dist);
 
@@ -129,7 +132,7 @@ class App extends React.Component {
         //add the samplePtGeom coords to map view as graphics
         let startTime = new Date();
         console.log(startTime);
-        generateTransectGraphicsAndChart(
+        generateTransectGraphicsAndChart_v2(
           this.state.view, 
           samplePtGeoms, 
           this.state.dist,
@@ -149,7 +152,7 @@ class App extends React.Component {
             });
             let endTime = new Date();
             console.log(endTime);
-            alert(`complete! ${allPtIds} Points analyzed for ${transectPtData.length} transects in ${moment(startTime).diff(endTime, "seconds")} seconds`);
+            alert(`complete! ${allPtIds} Points analyzed for ${transectPtData.length} transects in ${moment(endTime).diff(startTime, "seconds")} seconds`);
           } 
           else {
             // handle no data selected:
