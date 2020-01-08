@@ -14,13 +14,18 @@
     "react-scripts": "3.2.0"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "set EXTEND_ESLINT=true &&react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
-    "extends": "react-app"
+    "extends": ["react-app", "shared-config"],
+    "rules": {
+      "complexity": ["warn", { "max": 2 }],
+      "quotes": ["error", "double"],
+      "indent": ["error", 4]
+    }
   },
   "browserslist": {
     "production": [
