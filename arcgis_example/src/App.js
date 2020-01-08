@@ -34,7 +34,11 @@ class App extends React.Component {
     this.featureLayers = ["https://services8.arcgis.com/vVBb77z9fDbXITgG/ArcGIS/rest/services/SamplePoints/FeatureServer/0"];
   }
 
+
+
   render() {
+    console.log("run super complex function!!!!");
+    superComplexFunction(51);
     return (
       <div style={{ width: '100vw', height: '100vh' }}>
         <Map
@@ -168,6 +172,56 @@ class App extends React.Component {
   handleFail(e) {
     console.error(e);
     this.setState({ status: 'failed' });
+  }
+}
+
+function superComplexFunction(val) {
+  
+  if(typeof val === "number") {
+    if(val > 0 && val < 6){
+      if(val % 5 === 0) {
+        return "Its Five!";
+      }
+      else {
+        console.log("Its NOT five...");
+        if(typeof val === "string") {
+          console.log("Hey wait its a string");
+        }
+        else {
+          console.log("ITs NOT A string");
+          if(val === 100) {
+            return "hey wait its a hundredd";
+          }
+          else {
+            console.log("its not a hundred");
+          }
+        }
+      }
+    }
+    else if(val > 50) {
+      console.log("Wait its more than 50!");
+      if(val === 75) return "its seventy five"
+    }
+    else {
+      return "frig it I give up"
+    }
+  }
+  else {
+    try {
+      for(var newNum of val) {
+        if (typeof newNum === "number") {
+          console.log("its more than 1 digit?")
+        }
+        else { 
+          let newNum = newNum +  "SSSS";
+          return newNum + " is the first char"
+        }
+      }
+    }
+    catch(err) {
+      return err;
+    }
+    
   }
 }
 
