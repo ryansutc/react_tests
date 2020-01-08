@@ -9,7 +9,7 @@ const useStyles = makeStyles(theme => ({
     padding: "25px",
     height: "45vh",
     [theme.breakpoints.only('xs')]: {
-      minHeight: '80vh'
+      height: '80vh'
     },
     backgroundColor: "darkgrey",
     minHeight: '280px',
@@ -21,7 +21,7 @@ export default function ChartDashboard() {
 
   return (
     <div className={classes.root}>
-      <Grid container className={classes.gridContainer} id="dashboardRoot" spacing={3} alignItems="center" >
+      <Grid container id="dashboardRoot" spacing={3} alignItems="center" >
         <Chart />
       </Grid>
     </div>

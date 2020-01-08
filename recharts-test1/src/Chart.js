@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useLayoutEffect, useRef } from 'react';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 
 import { makeStyles, withWidth } from '@material-ui/core';
@@ -19,24 +19,14 @@ const useStyles = makeStyles(theme => ({
   paper: {
     textAlign: 'center',
   },
-  gridContainer: {
-    direction: "row",
-    height: "100%",
-    //alignItems: "stretch",
-    [theme.breakpoints.only('xs')]: {
-      direction: "column",
-      //height: '40%',
-      minHeight: '300px'
-    },
-    //backgroundColor: "blue",
-
-  },
   chartItem: {
     flexGrow: 1,
     //backgroundColor: "red",
     //width: '100%',
     minWidth: '300px',
-    alignItems: 'center',
+    marginLeft: '-30px',
+    marginRight: '-30px',
+    //alignItems: 'center',
     height: '100%',
     width: 0, //force resize (see SO issue: https://stackoverflow.com/questions/7985021/css-flexbox-issue-why-is-the-width-of-my-flexchildren-affected-by-their-content)
     [theme.breakpoints.only('xs')]: {
@@ -52,7 +42,21 @@ const useStyles = makeStyles(theme => ({
       height: '20%',
       width: '100%'
     }
-  }
+  },
+  axisItem: {
+    position: 'relative',
+  },
+  axisLabel: {
+    position: "absolute",
+    //transform: `translate(-75px, 0px) rotate(270deg)`,
+    overflow: 'visible',
+    whiteSpace: 'nowrap',
+    //border: 'solid',
+    width: 'auto',
+    textAlign: 'center',
+    //transformOrigin: '50px 0px',
+    height: 1
+  },
 }))
 
 export default function Chart(props) {
@@ -60,7 +64,8 @@ export default function Chart(props) {
   const [refAreaRight, setRefAreaRight] = useState('');
   const [zoomLeft, setZoomLeft] = useState(0);
   const [zoomRight, setZoomRight] = useState(0);
-
+  const [translateProcess, setTranslateProcess] = useState("");
+  const axisLabelRef = useRef();
   let chartData = Object.values(data);
   const dateStart = chartData[0].date;
   const dateEnd = chartData[chartData.length - 1].date;
@@ -140,19 +145,32 @@ export default function Chart(props) {
 
   const mobileWidth = useMediaQuery('(min-width:600px)');
   const mobileHeight = useMediaQuery('(min-height:500px)');
+
+  useLayoutEffect(() => {
+    if(axisLabelRef.current) {
+      var offsetWidth = axisLabelRef.current.offsetWidth;
+      var translateProcess = "translate(-" + offsetWidth/2 + "px, 0px) rotate(-90deg)";
+      console.log(translateProcess);
+      setTranslateProcess(translateProcess);
+    }
+  })
+
   return (
     <React.Fragment>
       <Grid item xs={12}>
         {`Cumulative Displacement from ${formatDateForLabel(dateStart)} to ${formatDateForLabel(dateEnd)} `}
       </Grid>
-      <Grid item xs={12} sm={10} md={11} className={classes.chartItem}>
+      <Grid item className={classes.axisItem}>
+        <div ref={axisLabelRef} className={classes.axisLabel} style={{transform: translateProcess}}><span>Chart Stuff On First Line <br/> More details on second line</span></div>
+      </Grid>
+      <Grid item className={classes.chartItem}>
 
         <ResponsiveContainer height={mobileWidth && mobileHeight ?
           (window.innerHeight / 2.5) - 25 : (window.innerHeight / 1.8) - 25}>
           <LineChart
-            onMouseDown={(e) => setRefAreaLeft(e.activeLabel)}
-            onMouseMove={(e) => refAreaLeft ? setRefAreaRight(e.activeLabel) : null}//refAreaLeft && setRefAreaRight(e.activelabel)}
-            onMouseUp={zoom}
+            // onMouseDown={(e) => setRefAreaLeft(e.activeLabel)}
+            // onMouseMove={(e) => refAreaLeft ? setRefAreaRight(e.activeLabel) : null}//refAreaLeft && setRefAreaRight(e.activelabel)}
+            // onMouseUp={zoom}
             data={chartData}
             margin={{
               top: 20, right: 20, bottom: 40, left: 20,
