@@ -1,13 +1,15 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './App.css';
-import SketchGraphicContainer from './SketchGraphicContainer'
-import { Map } from '@esri/react-arcgis';
+import "./App.css";
 
-import FeatureLayer from './FeatureLayer';
-import Controller from './Controller';
-import StatsForm from './StatsForm';
-import { updateSelectedPts, featuresToGraphics, getSymbolForPt } from './MapUtils';
+import React from "react";
+import ReactDOM from "react-dom";
+
+import { Map } from "@esri/react-arcgis";
+
+import Controller from "./Controller";
+import FeatureLayer from "./FeatureLayer";
+import { getSymbolForPt, updateSelectedPts } from "./MapUtils";
+import SketchGraphicContainer from "./SketchGraphicContainer";
+import StatsForm from "./StatsForm";
 
 class App extends React.Component {
   constructor(props) {
@@ -21,7 +23,7 @@ class App extends React.Component {
       midVal: 0,
       maxVal: 40,
       selectedPts: null,
-      selectionStats: null
+      selectionStats: null,
     };
     this.getSummaryFromSelection = this.getSummaryFromSelection.bind(this);
     this.handleMapLoad = this.handleMapLoad.bind(this);
@@ -31,31 +33,28 @@ class App extends React.Component {
     this.createFeatureLayers = this.createFeatureLayers.bind(this);
     this.renderViewContent = this.renderViewContent.bind(this);
     this.updateSymbol = this.updateSymbol.bind(this);
-    this.featureLayers = ["https://services8.arcgis.com/vVBb77z9fDbXITgG/ArcGIS/rest/services/SamplePoints/FeatureServer/0"];
+    this.featureLayers = [
+      "https://services8.arcgis.com/vVBb77z9fDbXITgG/ArcGIS/rest/services/SamplePoints/FeatureServer/0",
+    ];
   }
 
-
-
   render() {
-    console.log("run super complex function!!!!");
-    superComplexFunction(51);
     return (
-      <div style={{ width: '100vw', height: '100vh' }}>
+      <div style={{ width: "100vw", height: "100vh" }}>
         <Map
           onLoad={this.handleMapLoad}
           onFail={this.handleFail}
           mapProperties={{
-            basemap: 'dark-gray',
+            basemap: "dark-gray",
           }}
           loadElement={"loading spacecraft..."}
           viewProperties={{
             center: [-123.1257, 49.249],
-            zoom: 12
-          }}>
+            zoom: 12,
+          }}
+        >
           {this.createFeatureLayers()}
-          <StatsForm
-            selectionStats={this.state.selectionStats}
-          />
+          <StatsForm selectionStats={this.state.selectionStats} />
         </Map>
       </div>
     );
@@ -70,9 +69,10 @@ class App extends React.Component {
       <SketchGraphicContainer
         map={this.state.map}
         view={this.state.view}
-        selectPts={this.selectPts}
         handleSelectPts={this.handleSelectPts}
-      />, node);
+      />,
+      node
+    );
 
     view.ui.add(node2, "bottom-left");
     ReactDOM.render(
@@ -81,39 +81,42 @@ class App extends React.Component {
         minVal={this.state.minVal}
         midVal={this.state.midVal}
         maxVal={this.state.maxVal}
-      />, node2);
+      />,
+      node2
+    );
   }
   handleMapClick(event) {
-    this.state.view.hitTest(event).then(response => {
-
-      let features = response.results.filter(result => {
-        return result.graphic.layer.layerId === 0
-      })
-      features.forEach(feature => feature.graphic.symbol = getSymbolForPt(feature));
+    this.state.view.hitTest(event).then((response) => {
+      let features = response.results.filter((result) => {
+        return result.graphic.layer.layerId === 0;
+      });
+      features.forEach(
+        (feature) => (feature.graphic.symbol = getSymbolForPt())
+      );
       if (features.length) {
         this.handleSelectPts([features[0].graphic], event.native.shiftKey);
-      }
-      else {
+      } else {
         this.handleSelectPts(null, event.native.shiftKey);
       }
-
     });
   }
 
   handleSelectPts(newSelection, shift = false) {
-
-    updateSelectedPts(this.state.selectedPts, newSelection, shift).then((updatedSelectedPts) => {
-      this.state.view.graphics.removeAll();
-      this.state.view.graphics.addMany(updatedSelectedPts);
-      this.setState({ selectedPts: updatedSelectedPts });
-      this.setState({ selectionStats: this.getSummaryFromSelection(updatedSelectedPts) });
-
-    });
+    updateSelectedPts(this.state.selectedPts, newSelection, shift).then(
+      (updatedSelectedPts) => {
+        this.state.view.graphics.removeAll();
+        this.state.view.graphics.addMany(updatedSelectedPts);
+        this.setState({ selectedPts: updatedSelectedPts });
+        this.setState({
+          selectionStats: this.getSummaryFromSelection(updatedSelectedPts),
+        });
+      }
+    );
   }
 
   /**
    * Returns an object with {count: 5, min: 10, max:35, avg:15} structure for pt data
-   * @param {graphics} selectedPtGraphics array of Graphics 
+   * @param {Object} selectedPtGraphics array of Graphics
    */
   getSummaryFromSelection(selectedPtGraphics) {
     let count = 0;
@@ -133,32 +136,34 @@ class App extends React.Component {
       total += val;
     }
 
-    return { "count": count, "min": min, "max": max, "avg": total / count }
-
+    return { count: count, min: min, max: max, avg: total / count };
   }
 
   createFeatureLayers() {
-    let featureLayerComponents = []
+    let featureLayerComponents = [];
     for (var layer in this.state.featureLayers) {
       featureLayerComponents.push(
-        <FeatureLayer key={"1"}
+        <FeatureLayer
+          key={"1"}
           layerID={this.state.featureLayers[layer]}
           minVal={this.state.minVal}
           midVal={this.state.midVal}
           maxVal={this.state.maxVal}
-          hide={true} />)
+          hide={true}
+        />
+      );
     }
-    return featureLayerComponents
+    return featureLayerComponents;
   }
 
   updateSymbol(e) {
-    this.setState({ [e.target.id]: parseInt(e.target.value) })
+    this.setState({ [e.target.id]: parseInt(e.target.value) });
     console.log(e.target.value);
   }
 
   handleMapLoad(map, view) {
-    console.log('Map Loaded.')
-    this.setState({ map: map, view: view, featureLayers: this.featureLayers })
+    console.log("Map Loaded.");
+    this.setState({ map: map, view: view, featureLayers: this.featureLayers });
     this.handleViewLoad(view);
   }
 
@@ -166,62 +171,12 @@ class App extends React.Component {
     view.when(() => {
       view.on("click", this.handleMapClick);
       this.renderViewContent(view);
-    })
+    });
   }
 
   handleFail(e) {
     console.error(e);
-    this.setState({ status: 'failed' });
-  }
-}
-
-function superComplexFunction(val) {
-  
-  if(typeof val === "number") {
-    if(val > 0 && val < 6){
-      if(val % 5 === 0) {
-        return "Its Five!";
-      }
-      else {
-        console.log("Its NOT five...");
-        if(typeof val === "string") {
-          console.log("Hey wait its a string");
-        }
-        else {
-          console.log("ITs NOT A string");
-          if(val === 100) {
-            return "hey wait its a hundredd";
-          }
-          else {
-            console.log("its not a hundred");
-          }
-        }
-      }
-    }
-    else if(val > 50) {
-      console.log("Wait its more than 50!");
-      if(val === 75) return "its seventy five"
-    }
-    else {
-      return "frig it I give up"
-    }
-  }
-  else {
-    try {
-      for(var newNum of val) {
-        if (typeof newNum === "number") {
-          console.log("its more than 1 digit?")
-        }
-        else { 
-          let newNum = newNum +  "SSSS";
-          return newNum + " is the first char"
-        }
-      }
-    }
-    catch(err) {
-      return err;
-    }
-    
+    this.setState({ status: "failed" });
   }
 }
 

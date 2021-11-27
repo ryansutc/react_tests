@@ -1,13 +1,12 @@
-import React from 'react';
-import { loadModules } from 'esri-loader';
-import { getRenderer, labelClass } from './RenderHelpers';
-import EditIcon from '@material-ui/icons/Edit';
-import Button from '@material-ui/core/Button';
-import Fab from '@material-ui/core/Fab';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import React from "react";
 
-import { featuresToGraphics } from './MapUtils';
+import { loadModules } from "esri-loader";
 
+import CircularProgress from "@material-ui/core/CircularProgress";
+import Fab from "@material-ui/core/Fab";
+import EditIcon from "@material-ui/icons/Edit";
+
+import { featuresToGraphics } from "./MapUtils";
 
 class SketchGraphic extends React.Component {
   constructor(props) {
@@ -23,30 +22,35 @@ class SketchGraphic extends React.Component {
 
     this.shift = false;
     this.state = {
-      loading: true
-    }
+      loading: true,
+    };
   }
 
   loadSketchViewLayers() {
     loadModules([
-      'esri/widgets/Sketch/SketchViewModel',
-      'esri/layers/GraphicsLayer',
-      'esri/geometry',
-      'esri/core/Collection'
-    ])
-      .then(([SketchViewModel, GraphicsLayer, geometry, Collection]) => {
-        this.setState({ loading: false }); //change ui now that esri libraries are loaded
-        this.graphicsLayer = new GraphicsLayer();
-        this.props.map.add(this.graphicsLayer);
+      "esri/widgets/Sketch/SketchViewModel",
+      "esri/layers/GraphicsLayer",
+      "esri/geometry",
+      "esri/core/Collection",
+    ]).then(([SketchViewModel, GraphicsLayer, geometry, Collection]) => {
+      this.setState({ loading: false }); //change ui now that esri libraries are loaded
+      this.graphicsLayer = new GraphicsLayer();
+      this.props.map.add(this.graphicsLayer);
 
-        this.sketchViewModel = new SketchViewModel({
-          view: this.props.view,
-          layer: this.graphicsLayer
-        });
+      this.sketchViewModel = new SketchViewModel({
+        view: this.props.view,
+        layer: this.graphicsLayer,
+      });
 
-        this.sketchViewModel.on("create", function(event) {
+      this.sketchViewModel.on(
+        "create",
+        function (event) {
           //when we do mouse up on the rectangle draw, lets check if shift was pressed
-          let root = document.getElementById("root").addEventListener("mouseup", this.shiftClickListener, { once: true });
+          let root = document
+            .getElementById("root")
+            .addEventListener("mouseup", this.shiftClickListener, {
+              once: true,
+            });
           if (event.state === "complete") {
             this.graphicsLayer.remove(event.graphic);
             this.selectFeatures(event.graphic.geometry);
@@ -54,34 +58,41 @@ class SketchGraphic extends React.Component {
 
           if (event.state === "cancel") {
             console.log("selection was cancelled");
-            document.getElementById("root").removeEventListener("mouseup", this.shiftClickListener.bind(this));
+            document
+              .getElementById("root")
+              .removeEventListener(
+                "mouseup",
+                this.shiftClickListener.bind(this)
+              );
           }
-        }.bind(this));
-      })
+        }.bind(this)
+      );
+    });
   }
 
   selectFeatures(geometry) {
     /**
      * selectingFeatures from sketch geom is 3 steps:
      *  - get featureSet records from an an ArcGIS REST spatial qeury call
-     *  - convert featureSet to ESRI Collection of graphics 
+     *  - convert featureSet to ESRI Collection of graphics
      *  - replace, or update view.graphics collection from new selection
      */
 
-    this.props.view.graphics.removeAll()
+    this.props.view.graphics.removeAll();
     let ptsLayer = this.props.map.layers.items[0];
-    ptsLayer.queryFeatures({
-      geometry: geometry,
-      spatialRelationship: "intersects",
-      distance: 1, //should be scale based
-      returnGeometry: true,
-      outFields: ['*']
-    })
+    ptsLayer
+      .queryFeatures({
+        geometry: geometry,
+        spatialRelationship: "intersects",
+        distance: 1, //should be scale based
+        returnGeometry: true,
+        outFields: ["*"],
+      })
       .then((featureSet) => {
         featuresToGraphics(featureSet.features).then((graphics) => {
-          this.props.handleSelectPts(graphics, this.shift)
+          this.props.handleSelectPts(graphics, this.shift);
         });
-      })
+      });
   }
 
   onClick() {
@@ -90,19 +101,16 @@ class SketchGraphic extends React.Component {
   render() {
     if (this.state.loading === false) {
       return (
-        <Fab color="secondary" label="edit"
-          onClick={this.onClick}
-        >
+        <Fab color="secondary" label="edit" onClick={this.onClick}>
           <EditIcon />
-        </Fab >
-      )
-    }
-    else {
+        </Fab>
+      );
+    } else {
       return (
         <div>
           <CircularProgress />
         </div>
-      )
+      );
     }
   }
 

@@ -1,8 +1,117 @@
 {
-  "extends": "react-app",
+  "extends": [
+    "react-app",
+    "eslint:recommended",
+    "plugin:jest/recommended",
+    "plugin:jest/style",
+    "plugin:jsdoc/recommended",
+    "plugin:security/recommended"
+  ],
+  "plugins": ["jest", "jsdoc", "security"],
+  "ignorePatterns": [
+    "/node_modules/**/*",
+    "/build/**/*",
+    "/compiled/**/*",
+    "/jest.config.js"
+  ],
   "rules": {
-    "complexity": ["warn", { "max": 2 }],
-    "quotes": ["error", "double"],
-    "indent": ["error", 4]
+    "complexity": [
+      "warn",
+      {
+        "max": 30
+      }
+    ],
+    "no-console": [
+      "warn",
+      {
+        "allow": ["warn", "error"]
+      }
+    ],
+    "max-len": [
+      "warn",
+      {
+        "code": 100,
+        "ignoreTrailingComments": true,
+        "ignoreUrls": true,
+        "ignoreStrings": true
+      }
+    ],
+    "max-nested-callbacks": ["warn", 10],
+    //"no-else-return": ["warn"],
+    "no-debugger": ["warn"],
+    "no-var": ["warn"],
+    // Override ESLINT:RECOMMENDED Errors to make them warnings:
+    "no-prototype-builtins": ["warn"],
+    "no-extra-semi": ["warn"],
+    "no-unused-vars": ["warn"],
+    "no-fallthrough": ["warn"],
+    "no-unexpected-multiline": ["warn"],
+    "no-extra-boolean-cast": ["warn"],
+    "no-dupe-keys": ["warn"],
+    "no-dupe-class-members": ["warn"],
+    // Incorporate some aspirational standards, consistent with
+    // airB&B, Facebook, etc. See:
+    // https://www.npmjs.com/package/eslint-config-airbnb. -RS
+    "react/sort-comp": ["warn"],
+    "prefer-object-spread": ["warn"],
+    "no-array-constructor": ["warn"],
+    "prefer-destructuring": [
+      "warn",
+      {
+        "array": true,
+        "object": true
+      },
+      {
+        "enforceForRenamedProperties": false
+      }
+    ],
+    "no-param-reassign": [
+      "warn",
+      {
+        "props": true,
+        "ignorePropertyModificationsFor": [
+          "map", // esri arcgis api classes
+          "view",
+          "mapView",
+          "sceneView",
+          "featureLayer",
+          "imageryLayer",
+          "imageryTileLayer"
+        ]
+      }
+    ],
+    "prefer-arrow-callback": ["warn"],
+    "class-methods-use-this": [
+      "warn",
+      {
+        "exceptMethods": [
+          "componentDidMount",
+          "componentDidUpdate",
+          "componentWillUnmount",
+          "render",
+          "shouldComponentUpdate"
+        ]
+      }
+    ],
+    "no-iterator": ["warn"],
+    "no-restricted-syntax": [
+      "warn",
+      "ForInStatement",
+      "ForOfStatement",
+      "WithStatement"
+    ],
+    "one-var": ["warn", "never"],
+    "no-plusplus": ["warn"],
+    "sort-keys": ["warn"],
+    "no-duplicate-imports": ["warn"],
+    "jest/no-focused-tests": [
+      "warn" // override recommended settings and just make a warning, git commit hook will keep out of repo.
+    ],
+    "jest/consistent-test-it": ["warn"]
+  },
+  "settings": {
+    "jsdoc": {
+      "mode": "typescript"
+    }
   }
 }

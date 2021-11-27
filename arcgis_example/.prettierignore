@@ -1,0 +1,18 @@
+#ignore artifacts:
+build
+dist
+
+# jest test coverage reports:
+coverage
+
+#ignore node packages:
+node_modules
+
+#ignore jest:
+jest.config.js
+
+# ignore html for now:
+*.html
+
+# compiled ts folder
+compiled
