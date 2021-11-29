@@ -1,0 +1,28 @@
+.App {
+  text-align: left;
+  margin: 20px;
+}
+
+td {
+  padding-right: 48px;
+  padding-left: 12px;
+  border: solid;
+}
+tr {
+  width: 220px;
+}
+.App-header {
+  display: absolute;
+  left: 50%;
+  top: 50%;
+  font-size: 16px;
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+body {
+  background-color: #282c34;
+}
